@@ -12,6 +12,7 @@ const luts = [
     name: '3Strip',
     description: 'Classic cinema look with rich contrast and vintage appeal',
     video: '/luts/3Strip.mp4',
+    videoSafari: '/luts/3Strip_safari.mp4',
     poster: '/luts/3Strip-poster.jpg',
     color: 'from-amber-400 to-orange-500'
   },
@@ -20,6 +21,7 @@ const luts = [
     name: 'Punch',
     description: 'High-impact colors with dramatic saturation boost',
     video: '/luts/Punch.mp4',
+    videoSafari: '/luts/Punch_safari.mp4',
     poster: '/luts/Punch-poster.jpg',
     color: 'from-red-400 to-pink-500'
   },
@@ -28,6 +30,7 @@ const luts = [
     name: 'Hannibal',
     description: 'Dark, moody atmosphere with cinematic shadows',
     video: '/luts/Hannibal.mp4',
+    videoSafari: '/luts/Hannibal_safari.mp4',
     poster: '/luts/Hannibal-poster.jpg',
     color: 'from-gray-400 to-slate-600'
   },
@@ -36,6 +39,7 @@ const luts = [
     name: 'Glacier',
     description: 'Cool, crisp tones with icy blue undertones',
     video: '/luts/Glacier.mp4',
+    videoSafari: '/luts/Glacier_safari.mp4',
     poster: '/luts/Glacier-poster.jpg',
     color: 'from-blue-400 to-cyan-500'
   },
@@ -44,6 +48,7 @@ const luts = [
     name: 'Duotone',
     description: 'Stylized two-tone effect for modern aesthetics',
     video: '/luts/Duotone.mp4',
+    videoSafari: '/luts/Duotone_safari.mp4',
     poster: '/luts/Duotone-poster.jpg',
     color: 'from-purple-400 to-indigo-500'
   },
@@ -52,6 +57,7 @@ const luts = [
     name: 'Drive',
     description: 'Neon-soaked retro vibes with synthwave appeal',
     video: '/luts/Drive.mp4',
+    videoSafari: '/luts/Drive_safari.mp4',
     poster: '/luts/Drive-poster.jpg',
     color: 'from-pink-400 to-purple-500'
   }
@@ -62,6 +68,7 @@ const LutsShowcase = () => {
   const [playingVideos, setPlayingVideos] = useState<Set<number>>(new Set())
   const [loadedVideos, setLoadedVideos] = useState<Set<number>>(new Set())
   const [isMobile, setIsMobile] = useState(false)
+  const [isSafari, setIsSafari] = useState(false)
   const sectionRef = useRef<HTMLDivElement>(null)
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
 
@@ -69,6 +76,11 @@ const LutsShowcase = () => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768)
     }
+    
+    // Detect Safari browser
+    const userAgent = navigator.userAgent.toLowerCase()
+    const isSafariBrowser = userAgent.includes('safari') && !userAgent.includes('chrome')
+    setIsSafari(isSafariBrowser)
     
     checkMobile()
     window.addEventListener('resize', checkMobile)
@@ -110,8 +122,9 @@ const LutsShowcase = () => {
     const video = videoRefs.current[index]
     if (!video || loadedVideos.has(index)) return
 
-    // Set video source to trigger loading
-    video.src = luts[index].video
+    // Set video source to trigger loading - use Safari version if needed
+    const videoSrc = isSafari ? luts[index].videoSafari : luts[index].video
+    video.src = videoSrc
     video.load()
     
     setLoadedVideos(prev => new Set([...prev, index]))
@@ -130,7 +143,7 @@ const LutsShowcase = () => {
           video.play()
           setPlayingVideos(prev => new Set([...prev, index]))
         }
-      }, 500)
+      }, isSafari ? 1000 : 500) // Longer delay for Safari
       return
     }
 
@@ -238,12 +251,14 @@ const LutsShowcase = () => {
                          loop
                          muted
                          playsInline
+                         webkit-playsinline="true"
+                         x-webkit-airplay="allow"
                          className="w-full h-full object-cover"
                          style={{ display: loadedVideos.has(index) ? 'block' : 'none' }}
                          onLoadedData={() => {
                            // Auto-play the active video on desktop
                            if (isActive && !isMobile && !playingVideos.has(index)) {
-                             setTimeout(() => toggleVideo(index), 100)
+                             setTimeout(() => toggleVideo(index), isSafari ? 200 : 100)
                            }
                          }}
                        />

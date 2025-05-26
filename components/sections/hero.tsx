@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback, useRef } from 'react'
+import React, { useState, useCallback, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { FaTiktok, FaInstagram, FaYoutube, FaEye, FaFire } from 'react-icons/fa'
 import { HiCheckCircle } from 'react-icons/hi'
@@ -12,7 +12,15 @@ const Hero = () => {
   const [hoveredPhone, setHoveredPhone] = useState<number | null>(null)
   const [loadingVideos, setLoadingVideos] = useState<Set<number>>(new Set())
   const [loadedVideos, setLoadedVideos] = useState<Set<number>>(new Set())
+  const [isSafari, setIsSafari] = useState(false)
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
+
+  useEffect(() => {
+    // Detect Safari browser
+    const userAgent = navigator.userAgent.toLowerCase()
+    const isSafariBrowser = userAgent.includes('safari') && !userAgent.includes('chrome')
+    setIsSafari(isSafariBrowser)
+  }, [])
 
   const handleMouseEnter = useCallback((phoneNumber: number) => {
     setHoveredPhone(phoneNumber)
@@ -45,7 +53,8 @@ const Hero = () => {
     const video = videoRefs.current[phoneNumber - 1]
     if (video) {
       video.load()
-      video.addEventListener('loadeddata', () => {
+      
+      const handleLoad = () => {
         setLoadedVideos(prev => new Set([...prev, phoneNumber]))
         setLoadingVideos(prev => {
           const newSet = new Set(prev)
@@ -62,9 +71,18 @@ const Hero = () => {
             video.play()
           })
         }
-      }, { once: true })
+      }
+
+      // Safari needs multiple event listeners for reliable loading
+      if (isSafari) {
+        video.addEventListener('loadedmetadata', handleLoad, { once: true })
+        video.addEventListener('canplaythrough', handleLoad, { once: true })
+        video.addEventListener('loadeddata', handleLoad, { once: true })
+      } else {
+        video.addEventListener('loadeddata', handleLoad, { once: true })
+      }
     }
-  }, [loadingVideos, loadedVideos, hoveredPhone])
+  }, [loadingVideos, loadedVideos, hoveredPhone, isSafari])
 
   const handleTouch = useCallback((phoneNumber: number) => {
     if (hoveredPhone === phoneNumber) {
@@ -88,6 +106,10 @@ const Hero = () => {
       }
     }
   }, [hoveredPhone, loadedVideos, preloadVideo])
+
+  const getVideoSrc = (phoneNumber: number) => {
+    return isSafari ? `/${phoneNumber}_safari.mp4` : `/${phoneNumber}.mp4`
+  }
 
   return (
     <section className="relative min-h-screen">
@@ -120,12 +142,14 @@ const Hero = () => {
                <div className="relative">
                  <video
                    ref={(el) => { videoRefs.current[0] = el }}
-                   src="/1.mp4"
+                   src={getVideoSrc(1)}
                    autoPlay
                    loop
                    muted
                    playsInline
                    preload="metadata"
+                   webkit-playsinline="true"
+                   x-webkit-airplay="allow"
                    className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
                  />
                  {loadingVideos.has(1) && 'ontouchstart' in window && (
@@ -156,12 +180,14 @@ const Hero = () => {
                <div className="relative">
                  <video
                    ref={(el) => { videoRefs.current[1] = el }}
-                   src="/2.mp4"
+                   src={getVideoSrc(2)}
                    autoPlay
                    loop
                    muted
                    playsInline
                    preload="metadata"
+                   webkit-playsinline="true"
+                   x-webkit-airplay="allow"
                    className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
                  />
                  {loadingVideos.has(2) && 'ontouchstart' in window && (
@@ -192,12 +218,14 @@ const Hero = () => {
                <div className="relative">
                  <video
                    ref={(el) => { videoRefs.current[2] = el }}
-                   src="/3.mp4"
+                   src={getVideoSrc(3)}
                    autoPlay
                    loop
                    muted
                    playsInline
                    preload="metadata"
+                   webkit-playsinline="true"
+                   x-webkit-airplay="allow"
                    className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
                  />
                  {loadingVideos.has(3) && 'ontouchstart' in window && (
@@ -228,12 +256,14 @@ const Hero = () => {
                <div className="relative">
                  <video
                    ref={(el) => { videoRefs.current[3] = el }}
-                   src="/4.mp4"
+                   src={getVideoSrc(4)}
                    autoPlay
                    loop
                    muted
                    playsInline
                    preload="metadata"
+                   webkit-playsinline="true"
+                   x-webkit-airplay="allow"
                    className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
                  />
                  {loadingVideos.has(4) && 'ontouchstart' in window && (

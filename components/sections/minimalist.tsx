@@ -153,6 +153,9 @@ const MinimalistAnimations = () => {
                     loop
                     muted
                     playsInline
+                    preload="metadata"
+                    webkit-playsinline="true"
+                    x-webkit-airplay="allow"
                   >
                     <source src="/minimalists/1_compressed.mp4" type="video/mp4" />
                   </video>
@@ -177,6 +180,9 @@ const MinimalistAnimations = () => {
                     loop
                     muted
                     playsInline
+                    preload="metadata"
+                    webkit-playsinline="true"
+                    x-webkit-airplay="allow"
                   >
                     <source src="/minimalists/1_compressed.mp4" type="video/mp4" />
                   </video>
@@ -201,6 +207,9 @@ const MinimalistAnimations = () => {
                     loop
                     muted
                     playsInline
+                    preload="metadata"
+                    webkit-playsinline="true"
+                    x-webkit-airplay="allow"
                   >
                     <source src="/minimalists/1_compressed.mp4" type="video/mp4" />
                   </video>
