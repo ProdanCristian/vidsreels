@@ -52,18 +52,26 @@ const HowItWorks = () => {
     }
   ]
 
-  // Lazy video loading - only load when component is in view
+  // Safari-compatible video loading with better error handling
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
 
     const handleLoadedMetadata = () => {
       console.log('Video metadata loaded, duration:', video.duration)
-      // Chrome needs a small delay before setting currentTime
+      // Safari needs more time and different approach
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+      const delay = isSafari ? 300 : 100
+      
       setTimeout(() => {
-        video.currentTime = 0.1
-        setIsVideoReady(true)
-      }, 100)
+        try {
+          video.currentTime = 0.1
+          setIsVideoReady(true)
+        } catch (error) {
+          console.log('Setting currentTime failed, trying alternative approach:', error)
+          setIsVideoReady(true)
+        }
+      }, delay)
     }
 
     const handleCanPlayThrough = () => {
@@ -71,40 +79,70 @@ const HowItWorks = () => {
       setIsVideoReady(true)
     }
 
-    const handleError = (e: Event) => {
-      console.error('Video error:', e)
+    const handleLoadedData = () => {
+      console.log('Video data loaded')
+      setIsVideoReady(true)
     }
 
-    // Chrome-specific attributes
+    const handleError = (e: Event) => {
+      console.error('Video error:', e)
+      // Try to reload the video once on error
+      setTimeout(() => {
+        if (video && !isVideoReady) {
+          console.log('Retrying video load...')
+          video.load()
+        }
+      }, 1000)
+    }
+
+    // Safari-specific attributes
     video.setAttribute('webkit-playsinline', 'true')
     video.setAttribute('x-webkit-airplay', 'allow')
+    video.setAttribute('playsinline', 'true')
     
     video.addEventListener('loadedmetadata', handleLoadedMetadata)
     video.addEventListener('canplaythrough', handleCanPlayThrough)
+    video.addEventListener('loadeddata', handleLoadedData)
     video.addEventListener('error', handleError)
 
-    // Lazy load video when component comes into view
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !isVideoReady) {
-            video.load()
-            observer.disconnect()
-          }
-        })
-      },
-      { threshold: 0.1 }
-    )
+    // Immediate load for Safari compatibility
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+    
+    if (isSafari) {
+      // Safari needs immediate loading
+      setTimeout(() => video.load(), 100)
+    } else {
+      // Lazy load for other browsers
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && !isVideoReady) {
+              video.load()
+              observer.disconnect()
+            }
+          })
+        },
+        { threshold: 0.1 }
+      )
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current)
+      if (sectionRef.current) {
+        observer.observe(sectionRef.current)
+      }
+
+      return () => {
+        video.removeEventListener('loadedmetadata', handleLoadedMetadata)
+        video.removeEventListener('canplaythrough', handleCanPlayThrough)
+        video.removeEventListener('loadeddata', handleLoadedData)
+        video.removeEventListener('error', handleError)
+        observer.disconnect()
+      }
     }
 
     return () => {
       video.removeEventListener('loadedmetadata', handleLoadedMetadata)
       video.removeEventListener('canplaythrough', handleCanPlayThrough)
+      video.removeEventListener('loadeddata', handleLoadedData)
       video.removeEventListener('error', handleError)
-      observer.disconnect()
     }
   }, [])
 
@@ -292,22 +330,23 @@ const HowItWorks = () => {
               loop
               muted
               playsInline
-              preload="none"
+              preload="metadata"
               disablePictureInPicture
               disableRemotePlayback
               controlsList="nodownload nofullscreen noremoteplayback"
-              crossOrigin="anonymous"
+              webkit-playsinline="true"
+              x-webkit-airplay="allow"
               style={{ 
                 willChange: 'transform',
                 backfaceVisibility: 'hidden',
                 perspective: '1000px',
-                transform: 'translateZ(0)', // Force hardware acceleration in Chrome
+                transform: 'translateZ(0)', // Force hardware acceleration
                 imageRendering: 'auto',
                 WebkitTransform: 'translateZ(0)', // Webkit-specific acceleration
                 WebkitBackfaceVisibility: 'hidden'
               }}
             >
-              <source src="/editing.mp4" type="video/mp4" />
+              <source src="/editing_medium_compressed.mp4" type="video/mp4" />
             </video>
             
             {/* Video overlay for better text readability */}
