@@ -52,24 +52,26 @@ const HowItWorks = () => {
     }
   ]
 
-  // Immediate video loading for smooth performance
+  // Safari-compatible video loading with better error handling
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
 
     const handleLoadedMetadata = () => {
       console.log('Video metadata loaded, duration:', video.duration)
-      // Set initial time and mark as ready
+      // Safari needs more time and different approach
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+      const delay = isSafari ? 300 : 100
+      
       setTimeout(() => {
         try {
           video.currentTime = 0.1
           setIsVideoReady(true)
-          console.log('Video ready for scroll-based seeking')
         } catch (error) {
           console.log('Setting currentTime failed, trying alternative approach:', error)
           setIsVideoReady(true)
         }
-      }, 50)
+      }, delay)
     }
 
     const handleCanPlayThrough = () => {
@@ -93,7 +95,7 @@ const HowItWorks = () => {
       }, 1000)
     }
 
-    // Safari-specific attributes for better compatibility
+    // Safari-specific attributes
     video.setAttribute('webkit-playsinline', 'true')
     video.setAttribute('x-webkit-airplay', 'allow')
     video.setAttribute('playsinline', 'true')
@@ -103,9 +105,38 @@ const HowItWorks = () => {
     video.addEventListener('loadeddata', handleLoadedData)
     video.addEventListener('error', handleError)
 
-    // Load video immediately for all browsers to ensure smooth experience
-    console.log('Starting immediate video load for smooth performance')
-    video.load()
+    // Immediate load for Safari compatibility
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+    
+    if (isSafari) {
+      // Safari needs immediate loading
+      setTimeout(() => video.load(), 100)
+    } else {
+      // Lazy load for other browsers
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && !isVideoReady) {
+              video.load()
+              observer.disconnect()
+            }
+          })
+        },
+        { threshold: 0.1 }
+      )
+
+      if (sectionRef.current) {
+        observer.observe(sectionRef.current)
+      }
+
+      return () => {
+        video.removeEventListener('loadedmetadata', handleLoadedMetadata)
+        video.removeEventListener('canplaythrough', handleCanPlayThrough)
+        video.removeEventListener('loadeddata', handleLoadedData)
+        video.removeEventListener('error', handleError)
+        observer.disconnect()
+      }
+    }
 
     return () => {
       video.removeEventListener('loadedmetadata', handleLoadedMetadata)
@@ -299,7 +330,7 @@ const HowItWorks = () => {
               loop
               muted
               playsInline
-              preload="auto"
+              preload="metadata"
               disablePictureInPicture
               disableRemotePlayback
               controlsList="nodownload nofullscreen noremoteplayback"
@@ -315,7 +346,7 @@ const HowItWorks = () => {
                 WebkitBackfaceVisibility: 'hidden'
               }}
             >
-              <source src="/editing_final_safari.mp4" type="video/mp4" />
+              <source src="/editing_medium_compressed.mp4" type="video/mp4" />
             </video>
             
             {/* Video overlay for better text readability */}
