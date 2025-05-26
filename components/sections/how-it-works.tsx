@@ -52,7 +52,7 @@ const HowItWorks = () => {
     }
   ]
 
-  // Chrome-optimized video initialization
+  // Lazy video loading - only load when component is in view
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
@@ -83,13 +83,28 @@ const HowItWorks = () => {
     video.addEventListener('canplaythrough', handleCanPlayThrough)
     video.addEventListener('error', handleError)
 
-    // Force load for Chrome
-    video.load()
+    // Lazy load video when component comes into view
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !isVideoReady) {
+            video.load()
+            observer.disconnect()
+          }
+        })
+      },
+      { threshold: 0.1 }
+    )
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
 
     return () => {
       video.removeEventListener('loadedmetadata', handleLoadedMetadata)
       video.removeEventListener('canplaythrough', handleCanPlayThrough)
       video.removeEventListener('error', handleError)
+      observer.disconnect()
     }
   }, [])
 
@@ -277,7 +292,7 @@ const HowItWorks = () => {
               loop
               muted
               playsInline
-              preload="metadata"
+              preload="none"
               disablePictureInPicture
               disableRemotePlayback
               controlsList="nodownload nofullscreen noremoteplayback"
