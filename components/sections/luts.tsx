@@ -233,7 +233,7 @@ const LutsShowcase = () => {
                      </div>
 
                                          {/* Video Container */}
-                     <div className="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden bg-black">
+                     <div className="relative aspect-[9/16] rounded-xl md:rounded-2xl overflow-hidden bg-black">
                        {/* Poster Image - Shows when video not loaded */}
                        {!loadedVideos.has(index) && (
                          <div className="absolute inset-0 w-full h-full cursor-pointer" onClick={() => toggleVideo(index)}>
@@ -254,7 +254,11 @@ const LutsShowcase = () => {
                          webkit-playsinline="true"
                          x-webkit-airplay="allow"
                          className="w-full h-full object-cover"
-                         style={{ display: loadedVideos.has(index) ? 'block' : 'none' }}
+                         style={{ 
+                           display: loadedVideos.has(index) ? 'block' : 'none',
+                           objectFit: 'cover',
+                           objectPosition: 'center'
+                         }}
                          onLoadedData={() => {
                            // Auto-play the active video on desktop
                            if (isActive && !isMobile && !playingVideos.has(index)) {
