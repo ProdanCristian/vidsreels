@@ -123,6 +123,7 @@ const Hero = () => {
                    src="/1.mp4"
                    autoPlay
                    loop
+                   muted
                    playsInline
                    preload="metadata"
                    className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
@@ -158,6 +159,7 @@ const Hero = () => {
                    src="/2.mp4"
                    autoPlay
                    loop
+                   muted
                    playsInline
                    preload="metadata"
                    className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
@@ -193,6 +195,7 @@ const Hero = () => {
                    src="/3.mp4"
                    autoPlay
                    loop
+                   muted
                    playsInline
                    preload="metadata"
                    className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
@@ -228,6 +231,7 @@ const Hero = () => {
                    src="/4.mp4"
                    autoPlay
                    loop
+                   muted
                    playsInline
                    preload="metadata"
                    className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"

@@ -270,6 +270,8 @@ const HowItWorks = () => {
             <video
               ref={videoRef}
               className="w-full h-full object-cover"
+              autoPlay
+              loop
               muted
               playsInline
               preload="metadata"
