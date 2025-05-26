@@ -9,20 +9,12 @@ const mainFaqData = [
     answer: "You get an incredible collection of 15,000+ luxury lifestyle reels, 70+ professional cinematic LUTs, 1000+ minimalist animations, video editing presets, templates, and digital assets. All files are delivered digitally and can be used immediately after purchase to create viral content."
   },
   {
-    question: "What are the 15,000 luxury reels and how can I use them?",
-    answer: "The luxury reels are high-quality video clips featuring luxury lifestyle content - exotic cars, private jets, yachts, mansions, designer items, and premium experiences. You can use these as background footage, B-roll, or main content for your social media posts, YouTube videos, and marketing materials."
-  },
-  {
     question: "Can I use these luxury reels and assets for commercial projects?",
     answer: "Absolutely! Your purchase includes a commercial license that allows you to use all 15,000+ luxury reels, LUTs, and animations for personal projects, client work, social media content, YouTube videos, and any commercial purposes. Perfect for YouTube, TikTok, Instagram, and all platforms."
   },
   {
     question: "What video editing software works with these reels and LUTs?",
     answer: "The luxury reels work with any video editing software that supports standard video formats (MP4, MOV). The LUTs and presets are compatible with all major editing software including DaVinci Resolve, Adobe Premiere Pro, Final Cut Pro, CapCut, Filmora, and Adobe After Effects."
-  },
-  {
-    question: "How do I download 15,000+ reels and other files after purchase?",
-    answer: "After successful payment, you'll receive an email with organized download links within 5-10 minutes. The luxury reels are categorized by themes (cars, jets, yachts, etc.) for easy browsing. All files are compressed and organized for efficient downloading."
   },
   {
     question: "Are these luxury reels and assets suitable for beginners?",
