@@ -266,7 +266,7 @@ const HowItWorks = () => {
   return (
     <>
       <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-center">
-        <span className="gradient-text">Simple Editing Process</span>
+        <span className="gradient-text">Editing Process</span>
       </h2>
       
       <style jsx>{cssAnimations}</style>

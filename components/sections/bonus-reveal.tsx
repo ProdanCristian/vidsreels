@@ -67,6 +67,11 @@ const BonusReveal = () => {
         {/* Bonus Components Section */}
         <div className="space-y-16 mb-16">
           <LutsShowcase />
+          <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full text-black text-2xl sm:text-3xl font-bold">
+            <FaPlus />
+          </div>
+        </div>
           <MinimalistAnimations /> 
         </div>
 

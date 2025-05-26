@@ -108,7 +108,7 @@ const Editing = () => {
             <span className="text-primary font-semibold text-sm md:text-base">Simple Process</span>
           </div>
           
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight px-2">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black mb-4 md:mb-6 leading-tight px-2">
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-foreground to-muted-foreground">
               From Zero to
             </span>
