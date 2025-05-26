@@ -152,7 +152,14 @@ const HowItWorks = () => {
       if (videoRef.current && isVideoReady) {
         const video = videoRef.current
         if (video.duration && !isNaN(video.duration) && video.duration > 0) {
-          const targetTime = progress * video.duration
+          // Calculate stopping point well before the end to account for screen transition
+          const frameRate = 30
+          const framesBeforeEnd = 15 // Stop 15 frames (0.5 seconds) before the end
+          const timeBeforeEnd = framesBeforeEnd / frameRate
+          const maxVideoTime = video.duration - timeBeforeEnd
+          
+          // Map progress to video time, but stop well before the end
+          const targetTime = Math.min(progress * video.duration, maxVideoTime)
           const timeDiff = Math.abs(targetTime - lastSeekTime.current)
           
           // Only seek if time difference is significant and not currently seeking
@@ -169,7 +176,7 @@ const HowItWorks = () => {
                 try {
                   video.currentTime = targetTime
                   lastSeekTime.current = targetTime
-                  console.log('Video time set to:', targetTime, 'of', video.duration)
+                  console.log('Video time set to:', targetTime, 'of', video.duration, '(max:', maxVideoTime, ')')
                   
                   // Reset seeking flag after a short delay
                   setTimeout(() => {
@@ -261,10 +268,7 @@ const HowItWorks = () => {
         
         {/* Vertical Video Container */}
         <div 
-          className="relative w-full max-w-sm h-full flex items-center justify-center transition-opacity duration-1000 ease-out"
-          style={{
-            opacity: scrollProgress >= 1 ? 0 : 1
-          }}
+          className="relative w-full max-w-sm h-full flex items-center justify-center"
         >
           <div className="relative w-full aspect-[9/16] max-h-[80vh] rounded-3xl overflow-hidden shadow-2xl">
             <video
@@ -490,10 +494,7 @@ const HowItWorks = () => {
 
         {/* Progress Indicator */}
         <div 
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 transition-opacity duration-1000 ease-out"
-          style={{
-            opacity: scrollProgress >= 1 ? 0 : 1
-          }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30"
         >
           <div className="bg-black/30 backdrop-blur-md rounded-full px-6 py-3 border border-white/10">
             <div className="flex items-center gap-3 text-white">
