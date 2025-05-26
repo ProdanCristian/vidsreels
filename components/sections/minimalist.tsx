@@ -8,6 +8,7 @@ const MinimalistAnimations = () => {
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isVisible, setIsVisible] = useState(false)
   const [videosLoaded, setVideosLoaded] = useState(false)
+  const [hasTriggeredLoad, setHasTriggeredLoad] = useState(false)
 
   // Optimized scroll handler with throttling
   const handleScroll = useCallback(() => {
@@ -47,18 +48,21 @@ const MinimalistAnimations = () => {
     return () => window.removeEventListener('scroll', throttledScroll)
   }, [handleScroll])
 
-  // Intersection Observer for lazy loading videos
+  // Improved Intersection Observer for lazy loading videos
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && !videosLoaded) {
-            setVideosLoaded(true)
-            observer.disconnect()
+          if (entry.isIntersecting && !hasTriggeredLoad) {
+            setHasTriggeredLoad(true)
+            // Delay video loading slightly to ensure smooth animation
+            setTimeout(() => {
+              setVideosLoaded(true)
+            }, 300)
           }
         })
       },
-      { threshold: 0.2, rootMargin: '50px' }
+      { threshold: 0.1, rootMargin: '100px' }
     )
 
     if (sectionRef.current) {
@@ -66,7 +70,18 @@ const MinimalistAnimations = () => {
     }
 
     return () => observer.disconnect()
-  }, [videosLoaded])
+  }, [hasTriggeredLoad])
+
+  // Fallback: Load videos after a delay if intersection observer fails
+  useEffect(() => {
+    const fallbackTimer = setTimeout(() => {
+      if (!videosLoaded && isVisible) {
+        setVideosLoaded(true)
+      }
+    }, 2000)
+
+    return () => clearTimeout(fallbackTimer)
+  }, [isVisible, videosLoaded])
 
   return (
     <section ref={sectionRef} className="relative min-h-screen bg-black overflow-hidden">
@@ -163,18 +178,28 @@ const MinimalistAnimations = () => {
             {Array.from({ length: 8 }, (_, i) => (
               <div key={`right-${i}`} className="flex-shrink-0 mx-4">
                 <div className="relative w-64 h-36 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden group hover:bg-white/10 transition-all duration-500">
-                  {videosLoaded ? (
+                  {videosLoaded || hasTriggeredLoad ? (
                     <video
                       className="w-full h-full object-cover"
                       autoPlay
                       loop
                       muted
                       playsInline
-                      preload="none"
+                      preload="metadata"
+                      onLoadStart={() => {
+                        // Ensure video is ready
+                        if (!videosLoaded) setVideosLoaded(true)
+                      }}
+                      onError={() => {
+                        // Fallback on error
+                        console.warn('Video failed to load, showing placeholder')
+                      }}
                       style={{
                         willChange: 'transform',
                         backfaceVisibility: 'hidden',
-                        transform: 'translateZ(0)'
+                        transform: 'translateZ(0)',
+                        opacity: videosLoaded ? 1 : 0,
+                        transition: 'opacity 0.5s ease-in-out'
                       }}
                     >
                       <source src="/minimalists/1_compressed.mp4" type="video/mp4" />
@@ -196,18 +221,26 @@ const MinimalistAnimations = () => {
             {Array.from({ length: 8 }, (_, i) => (
               <div key={`left-${i}`} className="flex-shrink-0 mx-4">
                 <div className="relative w-64 h-36 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden group hover:bg-white/10 transition-all duration-500">
-                  {videosLoaded ? (
+                  {videosLoaded || hasTriggeredLoad ? (
                     <video
                       className="w-full h-full object-cover"
                       autoPlay
                       loop
                       muted
                       playsInline
-                      preload="none"
+                      preload="metadata"
+                      onLoadStart={() => {
+                        if (!videosLoaded) setVideosLoaded(true)
+                      }}
+                      onError={() => {
+                        console.warn('Video failed to load, showing placeholder')
+                      }}
                       style={{
                         willChange: 'transform',
                         backfaceVisibility: 'hidden',
-                        transform: 'translateZ(0)'
+                        transform: 'translateZ(0)',
+                        opacity: videosLoaded ? 1 : 0,
+                        transition: 'opacity 0.5s ease-in-out'
                       }}
                     >
                       <source src="/minimalists/1_compressed.mp4" type="video/mp4" />
@@ -229,18 +262,26 @@ const MinimalistAnimations = () => {
             {Array.from({ length: 8 }, (_, i) => (
               <div key={`slow-${i}`} className="flex-shrink-0 mx-4">
                 <div className="relative w-64 h-36 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden group hover:bg-white/10 transition-all duration-500">
-                  {videosLoaded ? (
+                  {videosLoaded || hasTriggeredLoad ? (
                     <video
                       className="w-full h-full object-cover"
                       autoPlay
                       loop
                       muted
                       playsInline
-                      preload="none"
+                      preload="metadata"
+                      onLoadStart={() => {
+                        if (!videosLoaded) setVideosLoaded(true)
+                      }}
+                      onError={() => {
+                        console.warn('Video failed to load, showing placeholder')
+                      }}
                       style={{
                         willChange: 'transform',
                         backfaceVisibility: 'hidden',
-                        transform: 'translateZ(0)'
+                        transform: 'translateZ(0)',
+                        opacity: videosLoaded ? 1 : 0,
+                        transition: 'opacity 0.5s ease-in-out'
                       }}
                     >
                       <source src="/minimalists/1_compressed.mp4" type="video/mp4" />
