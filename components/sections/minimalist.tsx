@@ -1,52 +1,84 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { FaPlay, FaEdit, FaDownload } from 'react-icons/fa'
 
 const MinimalistAnimations = () => {
   const sectionRef = useRef<HTMLDivElement>(null)
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isVisible, setIsVisible] = useState(false)
+  const [videosLoaded, setVideosLoaded] = useState(false)
+
+  // Optimized scroll handler with throttling
+  const handleScroll = useCallback(() => {
+    if (!sectionRef.current) return
+
+    const rect = sectionRef.current.getBoundingClientRect()
+    const windowHeight = window.innerHeight
+    const sectionHeight = rect.height
+
+    // Check if section is visible
+    if (rect.top < windowHeight && rect.bottom > 0) {
+      setIsVisible(true)
+      
+      // Calculate scroll progress within the section
+      const progress = Math.max(0, Math.min(1, (windowHeight - rect.top) / (windowHeight + sectionHeight)))
+      setScrollProgress(progress)
+    } else {
+      setIsVisible(false)
+    }
+  }, [])
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (!sectionRef.current) return
-
-      const rect = sectionRef.current.getBoundingClientRect()
-      const windowHeight = window.innerHeight
-      const sectionHeight = rect.height
-
-      // Check if section is visible
-      if (rect.top < windowHeight && rect.bottom > 0) {
-        setIsVisible(true)
-        
-        // Calculate scroll progress within the section
-        const progress = Math.max(0, Math.min(1, (windowHeight - rect.top) / (windowHeight + sectionHeight)))
-        setScrollProgress(progress)
-      } else {
-        setIsVisible(false)
+    let ticking = false
+    const throttledScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll()
+          ticking = false
+        })
+        ticking = true
       }
     }
 
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', throttledScroll, { passive: true })
     handleScroll() // Initial call
 
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+    return () => window.removeEventListener('scroll', throttledScroll)
+  }, [handleScroll])
 
+  // Intersection Observer for lazy loading videos
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !videosLoaded) {
+            setVideosLoaded(true)
+            observer.disconnect()
+          }
+        })
+      },
+      { threshold: 0.2, rootMargin: '50px' }
+    )
 
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [videosLoaded])
 
   return (
     <section ref={sectionRef} className="relative min-h-screen bg-black overflow-hidden">
-      {/* Animated Background Lines */}
+      {/* Optimized Background Lines - Reduced count */}
       <div className="absolute inset-0">
         {/* Horizontal Lines */}
-        {[...Array(8)].map((_, i) => (
+        {Array.from({ length: 6 }, (_, i) => (
           <div
             key={`h-${i}`}
             className="absolute h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
             style={{
-              top: `${(i + 1) * 12.5}%`,
+              top: `${(i + 1) * 16.66}%`,
               left: 0,
               right: 0,
               transform: `scaleX(${isVisible ? scrollProgress : 0})`,
@@ -57,12 +89,12 @@ const MinimalistAnimations = () => {
         ))}
 
         {/* Vertical Lines */}
-        {[...Array(6)].map((_, i) => (
+        {Array.from({ length: 4 }, (_, i) => (
           <div
             key={`v-${i}`}
             className="absolute w-px bg-gradient-to-b from-transparent via-white/20 to-transparent"
             style={{
-              left: `${(i + 1) * 16.66}%`,
+              left: `${(i + 1) * 20}%`,
               top: 0,
               bottom: 0,
               transform: `scaleY(${isVisible ? scrollProgress : 0})`,
@@ -72,30 +104,14 @@ const MinimalistAnimations = () => {
           />
         ))}
 
-        {/* Diagonal Lines */}
-        {[...Array(4)].map((_, i) => (
-          <div
-            key={`d-${i}`}
-            className="absolute w-px bg-gradient-to-b from-transparent via-white/10 to-transparent origin-bottom"
-            style={{
-              left: `${25 + i * 16.66}%`,
-              top: 0,
-              bottom: 0,
-              transform: `rotate(${15 + i * 10}deg) scaleY(${isVisible ? scrollProgress * 0.8 : 0})`,
-              transition: 'transform 1s ease-out',
-              transitionDelay: `${0.5 + i * 0.2}s`
-            }}
-          />
-        ))}
-
-        {/* Animated Dots */}
-        {[...Array(12)].map((_, i) => (
+        {/* Animated Dots - Reduced count */}
+        {Array.from({ length: 8 }, (_, i) => (
           <div
             key={`dot-${i}`}
             className="absolute w-2 h-2 bg-white/30 rounded-full"
             style={{
-              left: `${10 + (i % 4) * 25}%`,
-              top: `${20 + Math.floor(i / 4) * 25}%`,
+              left: `${15 + (i % 4) * 20}%`,
+              top: `${25 + Math.floor(i / 4) * 30}%`,
               opacity: isVisible ? scrollProgress : 0,
               transform: `scale(${isVisible ? scrollProgress : 0})`,
               transition: 'all 0.6s ease-out',
@@ -132,7 +148,7 @@ const MinimalistAnimations = () => {
           </p>
         </div>
 
-        {/* Marquee Animation Showcase */}
+        {/* Optimized Marquee Animation Showcase - Reduced videos */}
         <div 
           className="mb-16 overflow-hidden"
           style={{
@@ -142,25 +158,31 @@ const MinimalistAnimations = () => {
             transitionDelay: '0.8s'
           }}
         >
-          {/* First Row - Moving Right */}
+          {/* First Row - Moving Right - Reduced from 16 to 8 */}
           <div className="flex animate-marquee-right mb-8">
-            {[...Array(16)].map((_, i) => (
+            {Array.from({ length: 8 }, (_, i) => (
               <div key={`right-${i}`} className="flex-shrink-0 mx-4">
                 <div className="relative w-64 h-36 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden group hover:bg-white/10 transition-all duration-500">
-                  <video
-                    className="w-full h-full object-cover"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="metadata"
-                    webkit-playsinline="true"
-                    x-webkit-airplay="allow"
-                  >
-                    <source src="/minimalists/1_compressed.mp4" type="video/mp4" />
-                  </video>
+                  {videosLoaded ? (
+                    <video
+                      className="w-full h-full object-cover"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      preload="none"
+                      style={{
+                        willChange: 'transform',
+                        backfaceVisibility: 'hidden',
+                        transform: 'translateZ(0)'
+                      }}
+                    >
+                      <source src="/minimalists/1_compressed.mp4" type="video/mp4" />
+                    </video>
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-yellow-500/20 to-orange-500/20 animate-pulse" />
+                  )}
                   
-                  {/* Play Icon */}
                   <div className="absolute top-4 right-4 w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <FaPlay className="w-3 h-3 text-white ml-0.5" />
                   </div>
@@ -169,25 +191,31 @@ const MinimalistAnimations = () => {
             ))}
           </div>
 
-          {/* Second Row - Moving Left */}
+          {/* Second Row - Moving Left - Reduced from 16 to 8 */}
           <div className="flex animate-marquee-left mb-8">
-            {[...Array(16)].map((_, i) => (
+            {Array.from({ length: 8 }, (_, i) => (
               <div key={`left-${i}`} className="flex-shrink-0 mx-4">
                 <div className="relative w-64 h-36 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden group hover:bg-white/10 transition-all duration-500">
-                  <video
-                    className="w-full h-full object-cover"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="metadata"
-                    webkit-playsinline="true"
-                    x-webkit-airplay="allow"
-                  >
-                    <source src="/minimalists/1_compressed.mp4" type="video/mp4" />
-                  </video>
+                  {videosLoaded ? (
+                    <video
+                      className="w-full h-full object-cover"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      preload="none"
+                      style={{
+                        willChange: 'transform',
+                        backfaceVisibility: 'hidden',
+                        transform: 'translateZ(0)'
+                      }}
+                    >
+                      <source src="/minimalists/1_compressed.mp4" type="video/mp4" />
+                    </video>
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-yellow-500/20 to-orange-500/20 animate-pulse" />
+                  )}
                   
-                  {/* Play Icon */}
                   <div className="absolute top-4 right-4 w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <FaPlay className="w-3 h-3 text-white ml-0.5" />
                   </div>
@@ -196,25 +224,31 @@ const MinimalistAnimations = () => {
             ))}
           </div>
 
-          {/* Third Row - Moving Right (Slower) */}
+          {/* Third Row - Moving Right (Slower) - Reduced from 16 to 8 */}
           <div className="flex animate-marquee-right-slow">
-            {[...Array(16)].map((_, i) => (
+            {Array.from({ length: 8 }, (_, i) => (
               <div key={`slow-${i}`} className="flex-shrink-0 mx-4">
                 <div className="relative w-64 h-36 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden group hover:bg-white/10 transition-all duration-500">
-                  <video
-                    className="w-full h-full object-cover"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="metadata"
-                    webkit-playsinline="true"
-                    x-webkit-airplay="allow"
-                  >
-                    <source src="/minimalists/1_compressed.mp4" type="video/mp4" />
-                  </video>
+                  {videosLoaded ? (
+                    <video
+                      className="w-full h-full object-cover"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      preload="none"
+                      style={{
+                        willChange: 'transform',
+                        backfaceVisibility: 'hidden',
+                        transform: 'translateZ(0)'
+                      }}
+                    >
+                      <source src="/minimalists/1_compressed.mp4" type="video/mp4" />
+                    </video>
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-yellow-500/20 to-orange-500/20 animate-pulse" />
+                  )}
                   
-                  {/* Play Icon */}
                   <div className="absolute top-4 right-4 w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <FaPlay className="w-3 h-3 text-white ml-0.5" />
                   </div>
@@ -223,8 +257,6 @@ const MinimalistAnimations = () => {
             ))}
           </div>
         </div>
-
-
 
         {/* Features */}
         <div 
@@ -255,7 +287,7 @@ const MinimalistAnimations = () => {
         </div>
       </div>
 
-      {/* Floating Elements */}
+      {/* Optimized Floating Elements - Reduced count */}
       {isVisible && (
         <>
           <div 
@@ -263,13 +295,6 @@ const MinimalistAnimations = () => {
             style={{
               animation: 'float 6s ease-in-out infinite',
               animationDelay: '0s'
-            }}
-          />
-          <div 
-            className="absolute top-40 right-20 w-6 h-6 border border-white/20 rounded-full"
-            style={{
-              animation: 'float 8s ease-in-out infinite',
-              animationDelay: '2s'
             }}
           />
           <div 
