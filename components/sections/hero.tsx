@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback, useRef, useEffect } from 'react'
+import React from 'react'
 import Image from 'next/image'
 import { FaTiktok, FaInstagram, FaYoutube, FaEye, FaFire } from 'react-icons/fa'
 import { HiCheckCircle } from 'react-icons/hi'
@@ -9,107 +9,6 @@ import { useRouter } from 'next/navigation'
 
 const Hero = () => {
   const router = useRouter()
-  const [hoveredPhone, setHoveredPhone] = useState<number | null>(null)
-  const [loadingVideos, setLoadingVideos] = useState<Set<number>>(new Set())
-  const [loadedVideos, setLoadedVideos] = useState<Set<number>>(new Set())
-  const [isSafari, setIsSafari] = useState(false)
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
-
-  useEffect(() => {
-    // Detect Safari browser
-    const userAgent = navigator.userAgent.toLowerCase()
-    const isSafariBrowser = userAgent.includes('safari') && !userAgent.includes('chrome')
-    setIsSafari(isSafariBrowser)
-  }, [])
-
-  const handleMouseEnter = useCallback((phoneNumber: number) => {
-    setHoveredPhone(phoneNumber)
-    // Preload video on hover for desktop
-    if (!loadedVideos.has(phoneNumber)) {
-      preloadVideo(phoneNumber)
-    } else {
-      // If video is already loaded, play it with audio on desktop
-      const video = videoRefs.current[phoneNumber - 1]
-      if (video) {
-        video.muted = false
-        video.play().catch(() => {
-          // If audio fails, fallback to muted
-          video.muted = true
-          video.play()
-        })
-      }
-    }
-  }, [loadedVideos])
-
-  const handleMouseLeave = useCallback(() => {
-    setHoveredPhone(null)
-  }, [])
-
-  const preloadVideo = useCallback((phoneNumber: number) => {
-    if (loadingVideos.has(phoneNumber) || loadedVideos.has(phoneNumber)) return
-    
-    setLoadingVideos(prev => new Set([...prev, phoneNumber]))
-    
-    const video = videoRefs.current[phoneNumber - 1]
-    if (video) {
-      video.load()
-      
-      const handleLoad = () => {
-        setLoadedVideos(prev => new Set([...prev, phoneNumber]))
-        setLoadingVideos(prev => {
-          const newSet = new Set(prev)
-          newSet.delete(phoneNumber)
-          return newSet
-        })
-        
-        // Auto-play with audio when loaded
-        if (hoveredPhone === phoneNumber) {
-          video.muted = false
-          video.play().catch(() => {
-            // If audio fails, fallback to muted
-            video.muted = true
-            video.play()
-          })
-        }
-      }
-
-      // Safari needs multiple event listeners for reliable loading
-      if (isSafari) {
-        video.addEventListener('loadedmetadata', handleLoad, { once: true })
-        video.addEventListener('canplaythrough', handleLoad, { once: true })
-        video.addEventListener('loadeddata', handleLoad, { once: true })
-      } else {
-        video.addEventListener('loadeddata', handleLoad, { once: true })
-      }
-    }
-  }, [loadingVideos, loadedVideos, hoveredPhone, isSafari])
-
-  const handleTouch = useCallback((phoneNumber: number) => {
-    if (hoveredPhone === phoneNumber) {
-      setHoveredPhone(null)
-    } else {
-      setHoveredPhone(phoneNumber)
-      // Immediately preload video on mobile touch
-      if (!loadedVideos.has(phoneNumber)) {
-        preloadVideo(phoneNumber)
-      } else {
-        // If video is already loaded, play it with audio
-        const video = videoRefs.current[phoneNumber - 1]
-        if (video) {
-          video.muted = false
-          video.play().catch(() => {
-            // If audio fails, fallback to muted
-            video.muted = true
-            video.play()
-          })
-        }
-      }
-    }
-  }, [hoveredPhone, loadedVideos, preloadVideo])
-
-  const getVideoSrc = (phoneNumber: number) => {
-    return isSafari ? `/${phoneNumber}_safari.mp4` : `/${phoneNumber}.mp4`
-  }
 
   return (
     <section className="relative min-h-screen">
@@ -132,155 +31,47 @@ const Hero = () => {
 
                  <figure className="relative flex justify-center items-center min-h-[400px] sm:min-h-[500px] md:min-h-[600px]">
            {/* Phone 1 - Back left */}
-           <div 
-             className={`absolute z-10 -rotate-12 -translate-x-16 sm:-translate-x-24 md:-translate-x-32 translate-y-4 sm:translate-y-6 md:translate-y-8 animate-phone-entrance [animation-delay:0.2s] transform transition-all duration-500 hover:scale-110 cursor-pointer ${hoveredPhone === 1 ? 'z-50 scale-110' : 'hover:z-50'}`}
-             onMouseEnter={() => handleMouseEnter(1)}
-             onMouseLeave={handleMouseLeave}
-             onTouchStart={() => handleTouch(1)}
-           >
-             {hoveredPhone === 1 ? (
-               <div className="relative">
-                 <video
-                   ref={(el) => { videoRefs.current[0] = el }}
-                   src={getVideoSrc(1)}
-                   autoPlay
-                   loop
-                   muted
-                   playsInline
-                   preload="metadata"
-                   webkit-playsinline="true"
-                   x-webkit-airplay="allow"
-                   className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
-                 />
-                 {loadingVideos.has(1) && 'ontouchstart' in window && (
-                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem]">
-                     <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                   </div>
-                 )}
-               </div>
-             ) : (
-               <Image
-                 src="/VidsReels 1.webp"
-                 alt="VidsReels 1"
-                 width={300}
-                 height={600}
-                 className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
-               />
-             )}
+           <div className="absolute z-10 -rotate-12 -translate-x-16 sm:-translate-x-24 md:-translate-x-32 translate-y-4 sm:translate-y-6 md:translate-y-8 animate-phone-entrance [animation-delay:0.2s] transform transition-all duration-500 hover:scale-110">
+             <Image
+               src="/VidsReels 1.webp"
+               alt="VidsReels 1"
+               width={300}
+               height={600}
+               className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
+             />
            </div>
 
-                     {/* Phone 2 - Back right */}
-           <div 
-             className={`absolute z-20 rotate-12 translate-x-16 sm:translate-x-24 md:translate-x-32 translate-y-4 sm:translate-y-6 md:translate-y-8 animate-phone-entrance [animation-delay:0.4s] transform transition-all duration-500 hover:scale-110 cursor-pointer ${hoveredPhone === 2 ? 'z-50 scale-110' : 'hover:z-50'}`}
-             onMouseEnter={() => handleMouseEnter(2)}
-             onMouseLeave={handleMouseLeave}
-             onTouchStart={() => handleTouch(2)}
-           >
-             {hoveredPhone === 2 ? (
-               <div className="relative">
-                 <video
-                   ref={(el) => { videoRefs.current[1] = el }}
-                   src={getVideoSrc(2)}
-                   autoPlay
-                   loop
-                   muted
-                   playsInline
-                   preload="metadata"
-                   webkit-playsinline="true"
-                   x-webkit-airplay="allow"
-                   className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
-                 />
-                 {loadingVideos.has(2) && 'ontouchstart' in window && (
-                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem]">
-                     <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                   </div>
-                 )}
-               </div>
-             ) : (
-               <Image
-                 src="/VidsReels 2.webp"
-                 alt="VidsReels 2"
-                 width={300}
-                 height={600}
-                 className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
-               />
-             )}
+           {/* Phone 2 - Back right */}
+           <div className="absolute z-20 rotate-12 translate-x-16 sm:translate-x-24 md:translate-x-32 translate-y-4 sm:translate-y-6 md:translate-y-8 animate-phone-entrance [animation-delay:0.4s] transform transition-all duration-500 hover:scale-110">
+             <Image
+               src="/VidsReels 2.webp"
+               alt="VidsReels 2"
+               width={300}
+               height={600}
+               className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
+             />
            </div>
 
            {/* Phone 3 - Front left */}
-           <div 
-             className={`absolute z-30 -rotate-6 -translate-x-8 sm:-translate-x-12 md:-translate-x-16 -translate-y-2 sm:-translate-y-3 md:-translate-y-4 animate-phone-entrance [animation-delay:0.6s] transform transition-all duration-500 hover:scale-110 cursor-pointer ${hoveredPhone === 3 ? 'z-50 scale-110' : 'hover:z-50'}`}
-             onMouseEnter={() => handleMouseEnter(3)}
-             onMouseLeave={handleMouseLeave}
-             onTouchStart={() => handleTouch(3)}
-           >
-             {hoveredPhone === 3 ? (
-               <div className="relative">
-                 <video
-                   ref={(el) => { videoRefs.current[2] = el }}
-                   src={getVideoSrc(3)}
-                   autoPlay
-                   loop
-                   muted
-                   playsInline
-                   preload="metadata"
-                   webkit-playsinline="true"
-                   x-webkit-airplay="allow"
-                   className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
-                 />
-                 {loadingVideos.has(3) && 'ontouchstart' in window && (
-                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem]">
-                     <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                   </div>
-                 )}
-               </div>
-             ) : (
-               <Image
-                 src="/VidsReels 3.webp"
-                 alt="VidsReels 3"
-                 width={300}
-                 height={600}
-                 className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
-               />
-             )}
+           <div className="absolute z-30 -rotate-6 -translate-x-8 sm:-translate-x-12 md:-translate-x-16 -translate-y-2 sm:-translate-y-3 md:-translate-y-4 animate-phone-entrance [animation-delay:0.6s] transform transition-all duration-500 hover:scale-110">
+             <Image
+               src="/VidsReels 3.webp"
+               alt="VidsReels 3"
+               width={300}
+               height={600}
+               className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
+             />
            </div>
 
            {/* Phone 4 - Front center */}
-           <div 
-             className={`relative z-40 animate-phone-entrance [animation-delay:0.8s] transform transition-all duration-500 hover:scale-110 cursor-pointer ${hoveredPhone === 4 ? 'z-50 scale-110' : 'hover:z-50'}`}
-             onMouseEnter={() => handleMouseEnter(4)}
-             onMouseLeave={handleMouseLeave}
-             onTouchStart={() => handleTouch(4)}
-           >
-             {hoveredPhone === 4 ? (
-               <div className="relative">
-                 <video
-                   ref={(el) => { videoRefs.current[3] = el }}
-                   src={getVideoSrc(4)}
-                   autoPlay
-                   loop
-                   muted
-                   playsInline
-                   preload="metadata"
-                   webkit-playsinline="true"
-                   x-webkit-airplay="allow"
-                   className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
-                 />
-                 {loadingVideos.has(4) && 'ontouchstart' in window && (
-                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem]">
-                     <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                   </div>
-                 )}
-               </div>
-             ) : (
-               <Image
-                 src="/VidsReels 4.webp"
-                 alt="VidsReels 4"
-                 width={300}
-                 height={600}
-                 className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
-               />
-             )}
+           <div className="relative z-40 animate-phone-entrance [animation-delay:0.8s] transform transition-all duration-500 hover:scale-110">
+             <Image
+               src="/VidsReels 4.webp"
+               alt="VidsReels 4"
+               width={300}
+               height={600}
+               className="w-40 h-80 sm:w-44 sm:h-88 md:w-48 md:h-96 lg:w-[300px] lg:h-[600px] rounded-[1rem] sm:rounded-[1.5rem] md:rounded-[2rem] object-cover pointer-events-none"
+             />
            </div>
         </figure>
                  <div className="mt-10 flex justify-center items-center gap-4 text-sm text-muted-foreground animate-fade-in-up [animation-delay:0.6s]">
