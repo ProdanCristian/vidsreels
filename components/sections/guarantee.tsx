@@ -3,7 +3,11 @@
 import React from 'react'
 import { FaShieldAlt, FaCheckCircle, FaClock, FaHeart } from 'react-icons/fa'
 
-const Guarantee = () => {
+interface GuaranteeProps {
+  onGetBundle?: () => void
+}
+
+const Guarantee: React.FC<GuaranteeProps> = ({ onGetBundle }) => {
   return (
     <section className="py-16 md:py-24 bg-gradient-to-b from-secondary/10 to-background">
       <div className="container mx-auto px-4">
@@ -72,7 +76,10 @@ const Guarantee = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="px-10 md:px-12 py-5 md:py-6 bg-gradient-to-r from-yellow-400 to-orange-400 text-black rounded-full font-bold text-xl md:text-2xl hover:from-yellow-500 hover:to-orange-500 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+            <button 
+              onClick={onGetBundle}
+              className="px-10 md:px-12 py-5 md:py-6 bg-gradient-to-r from-yellow-400 to-orange-400 text-black rounded-full font-bold text-xl md:text-2xl hover:from-yellow-500 hover:to-orange-500 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
               Get Your Risk-Free Bundle – <span className="line-through">$287</span> $29
             </button>
 

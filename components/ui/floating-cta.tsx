@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from './button'
 import { Flame, X } from 'lucide-react'
+import { redirectToCheckout } from '@/lib/checkout'
 
 export function FloatingCTA() {
   const [isVisible, setIsVisible] = useState(false)
@@ -23,6 +24,10 @@ export function FloatingCTA() {
   const handleDismiss = () => {
     setIsDismissed(true)
     setIsVisible(false)
+  }
+
+  const handleGetBundle = async () => {
+    await redirectToCheckout()
   }
 
   return (
@@ -50,7 +55,7 @@ export function FloatingCTA() {
             </div>
             <Button
               className="w-full bg-black hover:bg-gray-900 text-white font-bold py-3 px-6 rounded-xl shadow-lg"
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              onClick={handleGetBundle}
             >
               <Flame className="mr-2 h-5 w-5" />
               Get Bundle Now

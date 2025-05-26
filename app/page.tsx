@@ -16,23 +16,20 @@ import Prof from '@/components/sections/prof'
 import StickyCTAButton from '@/components/ui/sticky-cta-button'
 import { useScrollTrigger } from '@/hooks/useScrollTrigger'
 import { useSimpleScrollTrigger } from '@/hooks/useSimpleScrollTrigger'
+import { redirectToCheckout } from '@/lib/checkout'
 
 const Page = () => {
   const { elementRef, isVisible } = useScrollTrigger({ threshold: 0.1, rootMargin: '0px 0px -200px 0px' })
   const { isVisible: isVisibleSimple } = useSimpleScrollTrigger('bonus-reveal')
 
-  const handleGetBundle = () => {
-    // Add your purchase/checkout logic here
-    console.log('Get Bundle clicked!')
-    // Example: redirect to checkout page
-    // window.location.href = '/checkout'
-    // Or scroll to a specific section
-    // document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })
+  const handleGetBundle = async () => {
+    // Redirect to Stripe checkout
+    await redirectToCheckout()
   }
 
   return (
     <div className="bg-background min-h-screen">
-      <Hero />
+      <Hero onGetBundle={handleGetBundle} />
       <Niches />
       <Editing />
       <HowItWorks />
@@ -43,7 +40,7 @@ const Page = () => {
       <Benefits />
       <Testimonials />
       <ValueStack />
-      <Guarantee />
+      <Guarantee onGetBundle={handleGetBundle} />
       <FAQMain />
       <Footer />
       

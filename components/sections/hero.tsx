@@ -7,7 +7,11 @@ import { HiCheckCircle } from 'react-icons/hi'
 import { AiFillStar } from 'react-icons/ai'
 import { useRouter } from 'next/navigation'
 
-const Hero = () => {
+interface HeroProps {
+  onGetBundle?: () => void
+}
+
+const Hero: React.FC<HeroProps> = ({ onGetBundle }) => {
   const router = useRouter()
 
   return (
@@ -108,7 +112,10 @@ const Hero = () => {
         </nav>
         
         <nav className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up [animation-delay:0.5s] px-4">
-                     <button className="cursor-pointer w-full sm:w-auto px-8 sm:px-10 py-4 sm:py-5 bg-gradient-to-r from-yellow-400 to-orange-400 text-black rounded-full font-bold text-lg sm:text-xl hover:from-yellow-500 hover:to-orange-500 transition-all duration-300 animate-pulse-cta shadow-lg hover:shadow-xl">
+                     <button 
+             onClick={onGetBundle}
+             className="cursor-pointer w-full sm:w-auto px-8 sm:px-10 py-4 sm:py-5 bg-gradient-to-r from-yellow-400 to-orange-400 text-black rounded-full font-bold text-lg sm:text-xl hover:from-yellow-500 hover:to-orange-500 transition-all duration-300 animate-pulse-cta shadow-lg hover:shadow-xl"
+           >
              <FaFire className="inline w-5 h-5 mr-2" /> Get 15,000 Reels – $29 (was $199)
            </button>
            <button onClick={() => router.push('/preview')} className="cursor-pointer w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-secondary border border-border rounded-full font-semibold text-base sm:text-lg hover:bg-secondary/80 transition-all duration-300 hover:scale-105">
