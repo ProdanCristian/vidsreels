@@ -6,26 +6,25 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-04-30.basil',
 })
 
-// Create transporter for sending emails
+
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
   port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: false, // true for 465 (SSL), false for 587 (TLS)
+  secure: false, 
   auth: {
-    user: process.env.SMTP_USER, // your Gmail address
-    pass: process.env.SMTP_PASS, // your Gmail app password
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
   },
   tls: {
-    rejectUnauthorized: false // Accept self-signed certificates
+    rejectUnauthorized: false
   },
-  debug: true, // Enable debug output
-  logger: true, // Log to console
-  connectionTimeout: 10000, // 10 seconds
-  greetingTimeout: 5000, // 5 seconds
-  socketTimeout: 10000, // 10 seconds
+  debug: true,
+  logger: true,
+  connectionTimeout: 10000,
+  greetingTimeout: 5000,
+  socketTimeout: 10000,
 })
 
-// Helper function to send email with timeout
 async function sendEmailWithTimeout(mailOptions: nodemailer.SendMailOptions, timeoutMs: number = 15000): Promise<nodemailer.SentMessageInfo> {
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
@@ -85,12 +84,18 @@ export async function POST(request: NextRequest) {
     // Email HTML template
     const emailHtml = `
       <!DOCTYPE html>
-      <html>
+      <html lang="en">
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Your VidsReels Bundle</title>
         <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <!--[if mso]>
+        <style type="text/css">
+          .fallback-font { font-family: Arial, sans-serif !important; }
+        </style>
+        <![endif]-->
         <style>
           * {
             margin: 0;
@@ -170,21 +175,7 @@ export async function POST(request: NextRequest) {
             font-size: 14px;
             font-weight: 500;
             color: #f87171;
-            margin-bottom: 24px;
-          }
-          
-          .success-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #facc15, #f97316);
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            color: #000000;
-            font-weight: bold;
+            margin-bottom: 32px;
           }
           
           .main-title {
@@ -434,8 +425,6 @@ export async function POST(request: NextRequest) {
                 🔥 <span>15,000+ Viral Reels</span>
               </div>
               
-              <div class="success-icon">✓</div>
-              
               <h1 class="main-title">Payment Successful! 🎉</h1>
               <p class="subtitle">Welcome to the VidsReels family, ${customerName}!</p>
               
@@ -528,7 +517,6 @@ export async function POST(request: NextRequest) {
     const mailOptions = {
       from: `"VidsReels" <support@vidsreels.com>`,
       to: emailRecipient,
-      // bcc: 'support@vidsreels.com', // Temporarily disabled until ImprovMX is set up
       subject: '🎉 Your VidsReels Bundle is Ready for Download!',
       html: emailHtml,
     }
