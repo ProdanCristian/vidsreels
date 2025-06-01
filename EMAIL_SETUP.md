@@ -103,6 +103,27 @@ SMTP_PASS=your_email_password
 - Test SMTP connection manually
 - Verify firewall/hosting allows SMTP
 
+**Zoho "535 Authentication Failed" Error?**
+This is common with Zoho. Try these solutions:
+
+1. **Enable Less Secure Apps** (Quick fix):
+   - Login to Zoho Mail → Settings → Security
+   - Enable "Allow less secure apps"
+   - Use your regular password
+
+2. **Use App Password** (Recommended):
+   - Login to Zoho Mail → Settings → Security → App Passwords
+   - Generate new app password for "Mail"
+   - Use this app password instead of regular password
+
+3. **Try SSL instead of TLS**:
+   ```bash
+   SMTP_HOST=smtp.zoho.com
+   SMTP_PORT=465
+   SMTP_USER=support@vidsreels.com
+   SMTP_PASS=your_password
+   ```
+
 **Emails going to spam?**
 - Use your actual business email as sender
 - Set up proper DNS records (SPF, DKIM, DMARC)
@@ -111,7 +132,7 @@ SMTP_PASS=your_email_password
 - Include unsubscribe link for marketing emails
 
 **Zoho specific advantages:**
-- No 2FA or app password complications
+- No 2FA or app password complications (once configured)
 - Excellent business email deliverability
 - Simple password authentication
 - Professional email service designed for business

@@ -24,42 +24,39 @@ SMTP_PASS=your_zoho_email_password
 
 ### 1. Zoho Mail Setup
 - Your `support@vidsreels.com` email should already be configured in Zoho
-- Use your regular Zoho email password for `SMTP_PASS`
-- No app password needed for Zoho (unlike Gmail)
+- **Important**: You may need to enable "Less Secure Apps" or use an App Password
+- For better security, create an App Password in Zoho
 
 ### 2. Zoho SMTP Settings
 ```bash
 SMTP_HOST=smtp.zoho.com
 SMTP_PORT=587
 SMTP_USER=support@vidsreels.com
-SMTP_PASS=your_zoho_password
+SMTP_PASS=your_zoho_password_or_app_password
 ```
 
-### 3. Alternative SMTP Providers
-You can also use other SMTP providers by updating the environment variables:
+### 3. Zoho Authentication Options
 
-**For Gmail:**
-```bash
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your_16_character_app_password
-```
+**Option 1: Enable Less Secure Apps (Quick Fix)**
+1. Log into your Zoho Mail account
+2. Go to Settings → Security
+3. Enable "Allow less secure apps"
+4. Use your regular password as `SMTP_PASS`
 
-**For Outlook/Hotmail:**
-```bash
-SMTP_HOST=smtp-mail.outlook.com
-SMTP_PORT=587
-SMTP_USER=your-email@outlook.com
-SMTP_PASS=your_password
-```
+**Option 2: Use App Password (Recommended)**
+1. Log into your Zoho Mail account
+2. Go to Settings → Security → App Passwords
+3. Generate a new app password for "Mail"
+4. Use this app password as `SMTP_PASS`
 
-**For Custom Domain (cPanel/WHM):**
+**Option 3: Alternative Zoho SMTP Settings**
+If the above doesn't work, try these settings:
 ```bash
-SMTP_HOST=mail.yourdomain.com
-SMTP_PORT=587
+SMTP_HOST=smtp.zoho.com
+SMTP_PORT=465
 SMTP_USER=support@vidsreels.com
-SMTP_PASS=your_email_password
+SMTP_PASS=your_password
+# Note: This uses SSL instead of TLS
 ```
 
 ### 4. Email From Address
@@ -201,10 +198,34 @@ SMTP_PASS=your_zoho_email_password
 5. Use a reputable SMTP provider
 
 ### Common SMTP Issues
-- **Zoho**: Use your regular email password, no app password needed
+- **Zoho Authentication Error (535)**: 
+  1. Enable "Less Secure Apps" in Zoho Settings → Security
+  2. OR create an App Password in Zoho Settings → Security → App Passwords
+  3. OR try port 465 with SSL instead of 587 with TLS
 - **Gmail**: Make sure 2FA is enabled and you're using an app password
 - **Outlook**: May require OAuth2 for better deliverability
 - **Custom Domain**: Ensure your hosting provider allows SMTP
+
+### Zoho Specific Troubleshooting
+If you get "535 Authentication Failed" error:
+
+1. **Enable Less Secure Apps** (Quick fix):
+   - Login to Zoho Mail → Settings → Security
+   - Enable "Allow less secure apps"
+   - Use your regular password
+
+2. **Use App Password** (Recommended):
+   - Login to Zoho Mail → Settings → Security → App Passwords
+   - Generate new app password for "Mail"
+   - Use this app password instead of regular password
+
+3. **Try Different Port/Security**:
+   ```bash
+   SMTP_HOST=smtp.zoho.com
+   SMTP_PORT=465
+   SMTP_USER=support@vidsreels.com
+   SMTP_PASS=your_password
+   ```
 
 ## Support
 

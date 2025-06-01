@@ -13,8 +13,13 @@ const transporter = nodemailer.createTransport({
   secure: false, // true for 465, false for other ports
   auth: {
     user: process.env.SMTP_USER, // your email
-    pass: process.env.SMTP_PASS, // your email password or app password
+    pass: process.env.SMTP_PASS, // your email password
   },
+  tls: {
+    rejectUnauthorized: false // Accept self-signed certificates
+  },
+  debug: true, // Enable debug output
+  logger: true // Log to console
 })
 
 export async function POST(request: NextRequest) {
