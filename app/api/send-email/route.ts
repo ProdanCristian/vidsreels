@@ -145,7 +145,8 @@ export async function POST(request: NextRequest) {
             color: #ffffff;
             text-decoration: none;
             display: inline-block;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
           }
           
           .logo .highlight {
@@ -175,13 +176,15 @@ export async function POST(request: NextRequest) {
           .success-icon {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #10b981, #059669);
+            background: linear-gradient(135deg, #facc15, #f97316);
             border-radius: 50%;
             margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 40px;
+            color: #000000;
+            font-weight: bold;
           }
           
           .main-title {
@@ -193,12 +196,10 @@ export async function POST(request: NextRequest) {
           
           .subtitle {
             font-size: 20px;
-            font-weight: 700;
-            background: linear-gradient(to right, #facc15, #f97316);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-weight: 600;
+            color: #ffffff;
             margin-bottom: 20px;
+            opacity: 0.9;
           }
           
           /* Test Mode Banner */
@@ -319,26 +320,27 @@ export async function POST(request: NextRequest) {
           .download-btn {
             display: inline-block;
             width: 100%;
-            padding: 12px 24px;
+            padding: 14px 24px;
             background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            color: #ffffff;
+            color: #ffffff !important;
             text-decoration: none;
             border-radius: 12px;
-            font-weight: 600;
+            font-weight: 700;
             text-align: center;
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
+            font-size: 16px;
           }
           
           .download-btn.purple {
             background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-            color: #ffffff;
+            color: #ffffff !important;
           }
           
           .download-btn.orange {
             background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #ffffff;
+            color: #ffffff !important;
           }
           
           .download-btn:hover {
@@ -432,7 +434,7 @@ export async function POST(request: NextRequest) {
                 🔥 <span>15,000+ Viral Reels</span>
               </div>
               
-              <div class="success-icon">✅</div>
+              <div class="success-icon">✓</div>
               
               <h1 class="main-title">Payment Successful! 🎉</h1>
               <p class="subtitle">Welcome to the VidsReels family, ${customerName}!</p>
