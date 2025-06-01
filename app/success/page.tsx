@@ -37,14 +37,20 @@ export default function SuccessPage() {
     setEmailError(null)
     
     try {
+      // Create an AbortController for timeout
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 20000) // 20 second timeout
+
       const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ sessionId }),
+        signal: controller.signal,
       })
 
+      clearTimeout(timeoutId)
       const data = await response.json()
 
       if (response.ok) {
@@ -54,7 +60,11 @@ export default function SuccessPage() {
       }
     } catch (error) {
       console.error('Email sending error:', error)
-      setEmailError('Failed to send email')
+      if (error instanceof Error && error.name === 'AbortError') {
+        setEmailError('Email sending timed out - but you can still download below!')
+      } else {
+        setEmailError('Failed to send email')
+      }
     } finally {
       setEmailSending(false)
     }
@@ -107,7 +117,10 @@ export default function SuccessPage() {
               {emailSent && !emailSending && (
                 <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 flex items-center justify-center gap-3">
                   <MailCheck className="w-5 h-5 text-green-600" />
-                  <span className="text-green-700 dark:text-green-300">Download links sent to your email! Check your inbox.</span>
+                  <div className="text-center">
+                    <span className="text-green-700 dark:text-green-300 font-medium block">Download links sent to your email! Check your inbox.</span>
+                    <span className="text-green-600 dark:text-green-400 text-sm mt-1 block">💡 Don&apos;t see it? Check your spam/junk folder</span>
+                  </div>
                 </div>
               )}
               
