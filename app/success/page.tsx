@@ -1,12 +1,15 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { CheckCircle, Download, Play, Palette, Film } from 'lucide-react'
+import { CheckCircle, Download, Play, Palette, Film, Mail, MailCheck } from 'lucide-react'
 
 
 export default function SuccessPage() {
   const [sessionId, setSessionId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [emailSent, setEmailSent] = useState(false)
+  const [emailSending, setEmailSending] = useState(false)
+  const [emailError, setEmailError] = useState<string | null>(null)
 
   useEffect(() => {
     // Get session ID from URL on client side
@@ -14,6 +17,11 @@ export default function SuccessPage() {
       const urlParams = new URLSearchParams(window.location.search)
       const id = urlParams.get('session_id')
       setSessionId(id)
+      
+      // Send email if we have a session ID
+      if (id) {
+        sendDownloadEmail(id)
+      }
     }
     
     // Shorter loading time for better UX
@@ -23,6 +31,34 @@ export default function SuccessPage() {
 
     return () => clearTimeout(timer)
   }, [])
+
+  const sendDownloadEmail = async (sessionId: string) => {
+    setEmailSending(true)
+    setEmailError(null)
+    
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ sessionId }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setEmailSent(true)
+      } else {
+        setEmailError(data.error || 'Failed to send email')
+      }
+    } catch (error) {
+      console.error('Email sending error:', error)
+      setEmailError('Failed to send email')
+    } finally {
+      setEmailSending(false)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -58,6 +94,34 @@ export default function SuccessPage() {
             )}
           </div>
 
+          {/* Email Status */}
+          {sessionId && (
+            <div className="mb-8">
+              {emailSending && (
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 flex items-center justify-center gap-3">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                  <span className="text-blue-700 dark:text-blue-300">Sending download links to your email...</span>
+                </div>
+              )}
+              
+              {emailSent && !emailSending && (
+                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 flex items-center justify-center gap-3">
+                  <MailCheck className="w-5 h-5 text-green-600" />
+                  <span className="text-green-700 dark:text-green-300">Download links sent to your email! Check your inbox.</span>
+                </div>
+              )}
+              
+              {emailError && !emailSending && (
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 flex items-center justify-center gap-3">
+                  <Mail className="w-5 h-5 text-red-600" />
+                  <span className="text-red-700 dark:text-red-300">
+                    Email sending failed. Don&apos;t worry - you can still download below!
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Order Summary */}
           <div className="bg-card border border-border rounded-2xl p-8 mb-12">
             <div className="flex justify-between items-center mb-6">
@@ -81,7 +145,7 @@ export default function SuccessPage() {
                   <h3 className="text-xl font-bold text-foreground mb-2">15,000 Viral Reels</h3>
                   <p className="text-sm text-muted-foreground mb-4">Premium 4K luxury lifestyle content</p>
                 </div>
-                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105">
+                <button onClick={() => window.open('https://drive.google.com/drive/folders/12PJSdiD-iEjst_suZdVLwxwh-xVbUpKT?usp=drive_link', '_blank')} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105">
                   <Download className="w-5 h-5 inline mr-2" />
                   Download Reels
                 </button>
@@ -94,7 +158,7 @@ export default function SuccessPage() {
                   <h3 className="text-xl font-bold text-foreground mb-2">1,000 Animations</h3>
                   <p className="text-sm text-muted-foreground mb-4">Minimal motion graphics & transitions</p>
                 </div>
-                <button className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105">
+                <button onClick={() => window.open('https://drive.google.com/drive/folders/1kbMmcUn42trZqo-zw8tzSvEIoOwsOzyD?usp=drive_link', '_blank')} className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105">
                   <Download className="w-5 h-5 inline mr-2" />
                   Download Animations
                 </button>
@@ -107,19 +171,12 @@ export default function SuccessPage() {
                   <h3 className="text-xl font-bold text-foreground mb-2">70 Premium LUTs</h3>
                   <p className="text-sm text-muted-foreground mb-4">Professional color grading presets</p>
                 </div>
-                <button className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105">
+                <button onClick={() => window.open('https://drive.google.com/drive/folders/16VYaDmUhYHLeyX2nLCxRMWCs6LCm3ZCQ?usp=drive_link', '_blank')} className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105">
                   <Download className="w-5 h-5 inline mr-2" />
                   Download LUTs
                 </button>
               </div>
             </div>
-          </div>
-
-          {/* Download All Button */}
-          <div className="mb-12">
-            <p className="text-sm text-muted-foreground mt-3">
-              All files also sent to your email address
-            </p>
           </div>
 
           {/* Support */}
