@@ -457,7 +457,7 @@ export async function POST(request: NextRequest) {
                     <div class="download-title">15,000 Viral Reels</div>
                     <div class="download-desc">Premium 4K luxury lifestyle content</div>
                   </div>
-                  <a href="https://drive.google.com/drive/folders/12PJSdiD-iEjst_suZdVLwxwh-xVbUpKT?usp=drive_link" class="download-btn">
+                  <a href="https://drive.google.com/drive/folders/1LJJu4HBpFgYNhqzCbeSp19Pz1btqvIZe?usp=drive_link" class="download-btn">
                     📥 Download Reels
                   </a>
                 </div>
@@ -469,7 +469,7 @@ export async function POST(request: NextRequest) {
                     <div class="download-title">1,000 Minimal Animations</div>
                     <div class="download-desc">Minimal motion graphics & transitions</div>
                   </div>
-                  <a href="https://drive.google.com/drive/folders/1kbMmcUn42trZqo-zw8tzSvEIoOwsOzyD?usp=drive_link" class="download-btn purple">
+                  <a href="https://drive.google.com/drive/folders/1SeJARnmLEVDmwTdarGWKsXS8zRVE6Uzq?usp=drive_link" class="download-btn purple">
                     📥 Download Animations
                   </a>
                 </div>

@@ -18,10 +18,11 @@ export default function SuccessPage() {
       const id = urlParams.get('session_id')
       setSessionId(id)
       
-      // Send email and track Facebook conversion if we have a session ID
+      // Send email and track conversions if we have a session ID
       if (id) {
         sendDownloadEmail(id)
         trackFacebookPurchase(id)
+        trackTikTokPurchase(id)
       }
     }
     
@@ -72,6 +73,63 @@ export default function SuccessPage() {
   }
 
 
+
+  const trackTikTokPurchase = async (sessionId: string) => {
+    try {
+      // Get customer data from Stripe session
+      const stripeResponse = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          action: 'get_session',
+          sessionId 
+        }),
+      })
+
+      if (!stripeResponse.ok) {
+        console.error('Failed to get Stripe session data for TikTok')
+        return
+      }
+
+      const stripeData = await stripeResponse.json()
+      const customerEmail = stripeData.customer_details?.email
+      const customerName = stripeData.customer_details?.name
+      const customerPhone = stripeData.customer_details?.phone
+
+      // Send comprehensive purchase event to TikTok
+      const tiktokResponse = await fetch('/api/tiktok-conversion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          eventName: 'Purchase',
+          email: customerEmail,
+          phone: customerPhone,
+          firstName: customerName?.split(' ')[0],
+          lastName: customerName?.split(' ').slice(1).join(' '),
+          currency: 'USD',
+          value: 29.00,
+          contentId: sessionId,
+          contentName: '15,000 Viral Reels Bundle - Purchase Completed',
+          contentType: 'product',
+          userAgent: navigator.userAgent,
+          sourceUrl: window.location.href,
+        }),
+      })
+
+      if (tiktokResponse.ok) {
+        const result = await tiktokResponse.json()
+        console.log('TikTok Purchase event tracked successfully:', result.eventId)
+      } else {
+        console.error('Failed to track TikTok Purchase event')
+      }
+    } catch (error) {
+      console.error('Error tracking TikTok Purchase event:', error)
+    }
+  }
 
   const trackFacebookPurchase = async (sessionId: string) => {
     try {
@@ -229,7 +287,7 @@ export default function SuccessPage() {
                   <h3 className="text-xl font-bold text-foreground mb-2">15,000 Viral Reels</h3>
                   <p className="text-sm text-muted-foreground mb-4">Premium 4K luxury lifestyle content</p>
                 </div>
-                <button onClick={() => window.open('https://drive.google.com/drive/folders/12PJSdiD-iEjst_suZdVLwxwh-xVbUpKT?usp=drive_link', '_blank')} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105">
+                <button onClick={() => window.open('https://drive.google.com/drive/folders/1LJJu4HBpFgYNhqzCbeSp19Pz1btqvIZe?usp=drive_link', '_blank')} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105">
                   <Download className="w-5 h-5 inline mr-2" />
                   Download Reels
                 </button>
@@ -242,7 +300,7 @@ export default function SuccessPage() {
                   <h3 className="text-xl font-bold text-foreground mb-2">1,000 Animations</h3>
                   <p className="text-sm text-muted-foreground mb-4">Minimal motion graphics & transitions</p>
                 </div>
-                <button onClick={() => window.open('https://drive.google.com/drive/folders/1kbMmcUn42trZqo-zw8tzSvEIoOwsOzyD?usp=drive_link', '_blank')} className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105">
+                <button onClick={() => window.open('https://drive.google.com/drive/folders/1SeJARnmLEVDmwTdarGWKsXS8zRVE6Uzq?usp=drive_link', '_blank')} className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105">
                   <Download className="w-5 h-5 inline mr-2" />
                   Download Animations
                 </button>

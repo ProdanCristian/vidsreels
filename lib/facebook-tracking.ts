@@ -74,10 +74,24 @@ export function trackInitiateCheckout(value: number = 29.00, buttonLocation?: st
 
 // Track custom button interactions with proper event type
 export function trackButtonClick(buttonLocation: string, buttonText?: string, interestLevel: 'High' | 'Medium' | 'Low' = 'Medium') {
+  // For high-intent checkout actions, use InitiateCheckout instead of Lead
+  if (interestLevel === 'High' && (buttonText?.toLowerCase().includes('checkout') || buttonText?.toLowerCase().includes('buy') || buttonText?.toLowerCase().includes('get'))) {
+    return trackFacebookEvent({
+      eventName: 'InitiateCheckout',
+      currency: 'USD',
+      value: 29.00,
+      contentName: buttonText || 'Checkout Button',
+      contentCategory: 'Purchase Intent',
+      actionType: 'Button Click',
+      location: buttonLocation,
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+    });
+  }
+  
   return trackFacebookEvent({
-    eventName: 'Lead', // Better event type for button clicks
-    contentName: `${buttonText || 'Button'} Clicked`,
-    contentCategory: `${interestLevel} Interest Button`,
+    eventName: 'Lead',
+    contentName: buttonText || 'Button Interaction',
+    contentCategory: `${interestLevel} Interest Action`,
     interestLevel,
     actionType: 'Button Click',
     location: buttonLocation,

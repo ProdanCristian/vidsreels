@@ -23,7 +23,7 @@ const Hero: React.FC<HeroProps> = ({ onGetBundle }) => {
 
   const handleGetBundleClick = () => {
     // Track high interest - user ready to purchase
-    trackHighIntent('Checkout Button Clicked', 'Hero Section')
+    trackHighIntent('Get 15,000 Reels Bundle', 'Hero Section')
     if (onGetBundle) {
       onGetBundle()
     }

@@ -158,13 +158,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('Facebook Conversion Event sent successfully:', {
-      eventName,
-      eventId,
-      email: email ? `${email.substring(0, 3)}***` : 'not provided',
-      contentName: contentName || 'not provided',
-      result
-    });
+
 
     return NextResponse.json({
       success: true,

@@ -18,6 +18,7 @@ import { useScrollTrigger } from '@/hooks/useScrollTrigger'
 import { useSimpleScrollTrigger } from '@/hooks/useSimpleScrollTrigger'
 import { redirectToCheckout } from '@/lib/checkout'
 import { trackViewContent, trackInitiateCheckout } from '@/lib/facebook-tracking'
+import { trackTikTokViewContent, trackTikTokInitiateCheckout } from '@/lib/tiktok-tracking'
 
 const Page = () => {
   const { elementRef, isVisible } = useScrollTrigger({ threshold: 0.1, rootMargin: '0px 0px -200px 0px' })
@@ -25,7 +26,9 @@ const Page = () => {
 
   // Track ViewContent when page loads and handle checkout parameter
   useEffect(() => {
+    // Track on both Facebook and TikTok
     trackViewContent()
+    trackTikTokViewContent()
     
     // Check if user came from preview page with checkout intent
     if (typeof window !== 'undefined') {
@@ -40,8 +43,11 @@ const Page = () => {
   }, [])
 
   const handleGetBundle = async (buttonLocation: string = 'Unknown') => {
-    // Track InitiateCheckout with button location before redirecting
-    await trackInitiateCheckout(29.00, buttonLocation)
+    // Track InitiateCheckout on both Facebook and TikTok before redirecting
+    await Promise.all([
+      trackInitiateCheckout(29.00, buttonLocation),
+      trackTikTokInitiateCheckout(29.00, `${buttonLocation} - VidsReels Bundle`)
+    ])
     
     // Redirect to Stripe checkout
     await redirectToCheckout()
