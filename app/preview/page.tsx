@@ -4,7 +4,21 @@ import React, { useEffect, useState } from 'react'
 import { FaPlay, FaFire, FaEye, FaArrowLeft } from 'react-icons/fa'
 import { useRouter } from 'next/navigation'
 import { trackInitiateCheckout, trackFacebookButtonClickClient } from '@/lib/facebook-tracking'
-import { trackTikTokButtonClickClient } from '@/lib/tiktok-tracking'
+import { trackTikTokButtonClickClient, trackTikTokInitiateCheckout } from '@/lib/tiktok-tracking'
+import { redirectToCheckout } from '@/lib/checkout'
+
+// Extend window interface for direct pixel calls
+declare global {
+  interface Window {
+    fbq?: ((action: string, event: string, data?: Record<string, unknown>) => void) & {
+      version?: string;
+    };
+    ttq?: {
+      identify: (data: Record<string, string>) => void;
+      track: (event: string, data: Record<string, unknown>, options?: Record<string, string>) => void;
+    };
+  }
+}
 
 export default function PreviewPage() {
   const router = useRouter()
@@ -29,12 +43,28 @@ export default function PreviewPage() {
   ]
 
   useEffect(() => {
-    // Track that user visited preview page - only once
+    // Track that user visited preview page with ViewContent instead of Lead
     if (!hasTrackedPageVisit) {
       const trackPageVisit = async () => {
         try {
-          trackFacebookButtonClickClient('Preview Page', 'Preview Page Visited')
-          await trackTikTokButtonClickClient('Preview Page', 'Preview Page Visited')
+          // Use ViewContent for page visits instead of Lead to avoid duplicate Lead events
+          if (typeof window !== 'undefined' && window.fbq) {
+            window.fbq('track', 'ViewContent', {
+              content_name: 'Preview Page Visited',
+              content_category: 'Page View'
+            })
+          }
+          if (typeof window !== 'undefined' && window.ttq) {
+            window.ttq.track('ViewContent', {
+              contents: [
+                {
+                  content_id: 'preview_page',
+                  content_type: 'page',
+                  content_name: 'Preview Page Visited'
+                }
+              ]
+            })
+          }
         } catch (error) {
           console.error('Error tracking preview page visit:', error)
         }
@@ -49,10 +79,25 @@ export default function PreviewPage() {
     setIsPlaying(true)
     setHasViewedVideos(true)
     
-    // Track video engagement with client-side tracking
+    // Track video engagement with ViewContent instead of Lead
     try {
-      trackFacebookButtonClickClient('Preview Page', `Video ${index + 1} Played`)
-      await trackTikTokButtonClickClient('Preview Page', `Video ${index + 1} Played`)
+      if (typeof window !== 'undefined' && window.fbq) {
+        window.fbq('track', 'ViewContent', {
+          content_name: `Video ${index + 1} Played`,
+          content_category: 'Video Engagement'
+        })
+      }
+      if (typeof window !== 'undefined' && window.ttq) {
+        window.ttq.track('ViewContent', {
+          contents: [
+            {
+              content_id: `video_${index + 1}`,
+              content_type: 'video',
+              content_name: `Video ${index + 1} Played`
+            }
+          ]
+        })
+      }
     } catch (error) {
       console.error('Error tracking video play:', error)
     }
@@ -63,22 +108,43 @@ export default function PreviewPage() {
     const action = hasViewedVideos ? 'Checkout After Preview' : 'Checkout from Preview Page'
     
     try {
+      // Client-side button tracking
       trackFacebookButtonClickClient('Preview Page', action)
       await trackTikTokButtonClickClient('Preview Page', action)
-      await trackInitiateCheckout(29.00, 'Preview Page')
+      
+      // Server-side conversion tracking
+      await Promise.all([
+        trackInitiateCheckout(undefined, 'Preview Page'),  // Facebook server-side
+        trackTikTokInitiateCheckout(undefined, 'Preview Page')  // TikTok server-side
+      ])
     } catch (error) {
       console.error('Error tracking checkout click:', error)
     }
     
-    // Navigate to home page and trigger checkout
-    router.push('/?checkout=true')
+    // Go directly to Stripe checkout instead of redirecting to main page
+    await redirectToCheckout()
   }
 
   const handleBackToHome = async () => {
     try {
-      // Track user leaving preview page
-      trackFacebookButtonClickClient('Preview Page', 'Back to Home from Preview')
-      await trackTikTokButtonClickClient('Preview Page', 'Back to Home from Preview')
+      // Track user leaving preview page with ViewContent instead of Lead
+      if (typeof window !== 'undefined' && window.fbq) {
+        window.fbq('track', 'ViewContent', {
+          content_name: 'Back to Home from Preview',
+          content_category: 'Navigation'
+        })
+      }
+      if (typeof window !== 'undefined' && window.ttq) {
+        window.ttq.track('ViewContent', {
+          contents: [
+            {
+              content_id: 'back_to_home',
+              content_type: 'navigation',
+              content_name: 'Back to Home from Preview'
+            }
+          ]
+        })
+      }
     } catch (error) {
       console.error('Error tracking back to home:', error)
     }

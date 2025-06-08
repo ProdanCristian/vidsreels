@@ -79,9 +79,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Prepare event properties
-    const properties: Record<string, string | number> = {
-      value: eventData.value || 0,
-      currency: eventData.currency || 'USD',
+    const properties: Record<string, string | number> = {}
+    
+    // Only add value and currency if they are provided (for Purchase events)
+    if (eventData.value !== undefined) {
+      properties.value = eventData.value
+    }
+    
+    if (eventData.currency) {
+      properties.currency = eventData.currency
     }
 
     if (eventData.contentId) {

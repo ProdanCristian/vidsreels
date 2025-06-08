@@ -1,5 +1,5 @@
 // TikTok Events API tracking utilities
-import { hashSHA256Client, generateEventId } from './hash-utils'
+import { generateEventId } from './hash-utils'
 
 // Extend window interface for TikTok pixel
 declare global {
@@ -61,16 +61,7 @@ export async function trackTikTokEvent(eventData: TikTokEventData): Promise<bool
   }
 }
 
-// Track when someone views the main page
-export function trackTikTokViewContent() {
-  return trackTikTokEvent({
-    eventName: 'ViewContent',
-    contentName: '15,000 Viral Reels Bundle',
-    contentType: 'product',
-    contentId: 'viral-reels-bundle',
-    // No value/currency for ViewContent - only for actual purchases
-  });
-}
+// Removed server-side ViewContent tracking - handled by browser-based tracking for better user interaction data
 
 // Track when someone starts checkout
 export function trackTikTokInitiateCheckout(value?: number, contentName?: string) {
@@ -112,7 +103,7 @@ export function trackTikTokPurchase(
 // - trackTikTokSearch
 // - trackTikTokAddToWishlist
 // - trackTikTokCompleteRegistration
-// Only keeping essential events: ViewContent, InitiateCheckout, Purchase
+// Server-side events: InitiateCheckout, Purchase (ViewContent handled client-side for better user interaction data)
 
 // ===== CLIENT-SIDE TRACKING FUNCTIONS =====
 // These use the TikTok pixel directly in the browser
@@ -136,100 +127,20 @@ export async function trackTikTokViewContentClient() {
   }
 }
 
-export async function trackTikTokInitiateCheckoutClient() {
-  if (typeof window !== 'undefined' && window.ttq) {
-    const eventId = generateEventId()
-    
-    window.ttq.track('InitiateCheckout', {
-      contents: [
-        {
-          content_id: 'vidsreels_bundle_15k',
-          content_type: 'product',
-          content_name: 'VidsReels 15,000 Bundle'
-        }
-      ]
-      // No value/currency for InitiateCheckout - only for actual purchases
-    }, {
-      event_id: eventId
-    })
-  }
-}
+// Removed client-side InitiateCheckout - handled by server-side for accurate conversion tracking
 
-export async function trackTikTokPurchaseClient(customerData?: {
-  email?: string
-  phone?: string
-  externalId?: string
-}) {
-  if (typeof window !== 'undefined' && window.ttq) {
-    try {
-      const eventId = generateEventId()
-      
-      // Hash PII data if provided
-      if (customerData?.email || customerData?.phone || customerData?.externalId) {
-        const identifyData: Record<string, string> = {}
-        
-        if (customerData.email) {
-          identifyData.email = await hashSHA256Client(customerData.email)
-        }
-        if (customerData.phone) {
-          identifyData.phone_number = await hashSHA256Client(customerData.phone)
-        }
-        if (customerData.externalId) {
-          identifyData.external_id = await hashSHA256Client(customerData.externalId)
-        }
-        
-        window.ttq.identify(identifyData)
-      }
-      
-      window.ttq.track('Purchase', {
-        contents: [
-          {
-            content_id: 'vidsreels_bundle_15k',
-            content_type: 'product',
-            content_name: 'VidsReels 15,000 Bundle'
-          }
-        ],
-        value: 29,
-        currency: 'USD'
-      }, {
-        event_id: eventId
-      })
-    } catch (error) {
-      console.error('Error tracking TikTok Purchase client-side:', error)
-      
-      // Fallback: Track without PII data if hashing fails
-      try {
-        const eventId = generateEventId()
-        window.ttq.track('Purchase', {
-          contents: [
-            {
-              content_id: 'vidsreels_bundle_15k',
-              content_type: 'product',
-              content_name: 'VidsReels 15,000 Bundle'
-            }
-          ],
-          value: 29,
-          currency: 'USD'
-        }, {
-          event_id: eventId
-        })
-      } catch (fallbackError) {
-        console.error('Error with TikTok Purchase fallback tracking:', fallbackError)
-      }
-    }
-  }
-}
+// Removed client-side Purchase - handled by server-side for accurate conversion tracking and revenue attribution
 
 // Client-side TikTok button tracking functions
 export async function trackTikTokButtonClickClient(buttonLocation: string, buttonText?: string) {
   if (typeof window !== 'undefined' && window.ttq) {
     const eventId = generateEventId()
     
-    // For high-intent buttons (buy/checkout), use InitiateCheckout
+    // For high-intent buttons (buy/checkout), use ClickButton event
     if (buttonText?.toLowerCase().includes('get') || 
         buttonText?.toLowerCase().includes('buy') || 
         buttonText?.toLowerCase().includes('checkout')) {
-      window.ttq.track('InitiateCheckout', {
+      window.ttq.track('ClickButton', {
         contents: [
           {
             content_id: 'vidsreels_bundle_15k',
@@ -237,7 +148,7 @@ export async function trackTikTokButtonClickClient(buttonLocation: string, butto
             content_name: buttonText || 'VidsReels Bundle'
           }
         ]
-        // No value/currency for InitiateCheckout - only for actual purchases
+        // No value/currency - button interactions don't have monetary value
       }, {
         event_id: eventId
       })
@@ -251,7 +162,7 @@ export async function trackTikTokButtonClickClient(buttonLocation: string, butto
             content_name: buttonText || 'Button Interaction'
           }
         ]
-        // No value/currency for ViewContent - only for actual purchases
+        // No value/currency - button interactions don't have monetary value
       }, {
         event_id: eventId
       })

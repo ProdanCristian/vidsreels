@@ -52,15 +52,7 @@ export async function trackFacebookEvent(eventData: FacebookEventData): Promise<
   }
 }
 
-// Track when someone views the main page
-export function trackViewContent() {
-  return trackFacebookEvent({
-    eventName: 'ViewContent',
-    contentName: '15,000 Viral Reels Bundle',
-    contentCategory: 'Digital Products',
-    userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
-  });
-}
+// Removed server-side ViewContent tracking - handled by browser-based tracking for better user interaction data
 
 // Track when someone starts checkout
 export function trackInitiateCheckout(value?: number, buttonLocation?: string) {
@@ -69,7 +61,7 @@ export function trackInitiateCheckout(value?: number, buttonLocation?: string) {
     // No value/currency for InitiateCheckout - only for actual purchases
     userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
     contentName: buttonLocation ? `Initiate Checkout from ${buttonLocation}` : 'Initiate Checkout',
-    contentCategory: 'Checkout Intent',
+    contentCategory: 'Initiate Checkout',
   });
 }
 
@@ -95,29 +87,21 @@ export function trackFacebookViewContentClient() {
   }
 }
 
-export function trackFacebookInitiateCheckoutClient() {
-  if (typeof window !== 'undefined' && window.fbq) {
-    window.fbq('track', 'InitiateCheckout', {
-      content_name: 'VidsReels Bundle Checkout',
-      content_category: 'Purchase Intent'
-      // No value/currency for InitiateCheckout - only for actual purchases
-    })
-  }
-}
+// Removed client-side InitiateCheckout - handled by server-side for accurate conversion tracking
 
 export function trackFacebookButtonClickClient(buttonLocation: string, buttonText?: string) {
   if (typeof window !== 'undefined' && window.fbq) {
-    // For high-intent buttons (buy/checkout), use InitiateCheckout
+    // For high-intent buttons (buy/checkout), use Lead with high intent category
     if (buttonText?.toLowerCase().includes('get') || 
         buttonText?.toLowerCase().includes('buy') || 
         buttonText?.toLowerCase().includes('checkout')) {
-      window.fbq('track', 'InitiateCheckout', {
-        content_name: buttonText || 'Checkout Button',
-        content_category: 'Purchase Intent'
-        // No value/currency - only for actual purchases
+      window.fbq('track', 'Lead', {
+        content_name: buttonText || 'Initiate Checkout Button',
+        content_category: 'High Intent Button Click'
+        // No value/currency - button interactions don't have monetary value
       })
     } else {
-      // For other buttons (preview, etc), use Lead
+      // For other buttons (preview, etc), use Lead with regular category
       window.fbq('track', 'Lead', {
         content_name: buttonText || 'Button Interaction',
         content_category: 'User Interest'
@@ -126,19 +110,10 @@ export function trackFacebookButtonClickClient(buttonLocation: string, buttonTex
   }
 }
 
-export function trackFacebookPurchaseClient() {
-  if (typeof window !== 'undefined' && window.fbq) {
-    window.fbq('track', 'Purchase', {
-      value: 29,
-      currency: 'USD',
-      content_name: '15,000 Viral Reels Bundle - Purchase Completed',
-      content_category: 'Digital Product Purchase'
-    })
-  }
-}
+// Removed client-side Purchase - handled by server-side for accurate conversion tracking and revenue attribution
 
 // Removed redundant server-side button tracking functions to prevent duplicate server-side events
-// Only keeping essential server-side events: ViewContent, InitiateCheckout, Purchase
+// Server-side events: InitiateCheckout, Purchase (ViewContent handled client-side for better user interaction data)
 
 // Track purchase completion
 export function trackPurchase(

@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
       city,
       state,
       postalCode,
-      currency = 'USD', 
+      currency, 
       value, 
       orderId,
       userAgent,

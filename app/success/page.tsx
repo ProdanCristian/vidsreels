@@ -2,8 +2,6 @@
 
 import React, { useEffect, useState } from 'react'
 import { CheckCircle, Download, Play, Palette, Film, Mail, MailCheck } from 'lucide-react'
-import { trackTikTokPurchaseClient } from '@/lib/tiktok-tracking'
-import { trackFacebookPurchaseClient } from '@/lib/facebook-tracking'
 
 
 export default function SuccessPage() {
@@ -24,9 +22,7 @@ export default function SuccessPage() {
       if (id) {
         sendDownloadEmail(id)
         trackFacebookPurchase(id)  // Facebook server-side
-        trackFacebookPurchaseClient()  // Facebook client-side
         trackTikTokPurchase(id)  // TikTok server-side
-        trackTikTokPurchaseClientWithData(id)  // TikTok client-side with PII
       }
     }
     
@@ -203,51 +199,7 @@ export default function SuccessPage() {
     }
   }
 
-  const trackTikTokPurchaseClientWithData = async (sessionId: string) => {
-    try {
-      // Get customer data from Stripe session
-      const stripeResponse = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          action: 'get_session',
-          sessionId 
-        }),
-      })
 
-      if (!stripeResponse.ok) {
-        console.error('Failed to get Stripe session data for client-side TikTok tracking')
-        // Fallback: Track without customer data
-        await trackTikTokPurchaseClient()
-        return
-      }
-
-      const stripeData = await stripeResponse.json()
-      const customerEmail = stripeData.customer_details?.email
-      const customerPhone = stripeData.customer_details?.phone
-
-      // Track with client-side TikTok pixel using enhanced format
-      await trackTikTokPurchaseClient({
-        email: customerEmail,
-        phone: customerPhone,
-        externalId: sessionId
-      })
-
-      console.log('TikTok client-side Purchase event tracked with customer data')
-    } catch (error) {
-      console.error('Error tracking TikTok client-side Purchase event:', error)
-      
-      // Fallback: Track basic purchase event without customer data
-      try {
-        await trackTikTokPurchaseClient()
-        console.log('TikTok client-side Purchase event tracked without customer data (fallback)')
-      } catch (fallbackError) {
-        console.error('Error with TikTok Purchase fallback tracking:', fallbackError)
-      }
-    }
-  }
 
   if (isLoading) {
     return (

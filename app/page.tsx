@@ -17,8 +17,8 @@ import StickyCTAButton from '@/components/ui/sticky-cta-button'
 import { useScrollTrigger } from '@/hooks/useScrollTrigger'
 import { useSimpleScrollTrigger } from '@/hooks/useSimpleScrollTrigger'
 import { redirectToCheckout } from '@/lib/checkout'
-import { trackViewContent, trackInitiateCheckout, trackFacebookViewContentClient, trackFacebookInitiateCheckoutClient } from '@/lib/facebook-tracking'
-import { trackTikTokViewContent, trackTikTokInitiateCheckout, trackTikTokViewContentClient, trackTikTokInitiateCheckoutClient } from '@/lib/tiktok-tracking'
+import { trackInitiateCheckout, trackFacebookViewContentClient } from '@/lib/facebook-tracking'
+import { trackTikTokInitiateCheckout, trackTikTokViewContentClient } from '@/lib/tiktok-tracking'
 
 const Page = () => {
   const { elementRef, isVisible } = useScrollTrigger({ threshold: 0.1, rootMargin: '0px 0px -200px 0px' })
@@ -26,10 +26,8 @@ const Page = () => {
 
   // Track ViewContent when page loads and handle checkout parameter
   useEffect(() => {
-    // Track ViewContent on both Facebook and TikTok (server-side + client-side)
-    trackViewContent()  // Facebook server-side
+    // Track ViewContent on both Facebook and TikTok (client-side only for better user interaction data)
     trackFacebookViewContentClient()  // Facebook client-side
-    trackTikTokViewContent()  // TikTok server-side
     trackTikTokViewContentClient()  // TikTok client-side
     
     // Check if user came from preview page with checkout intent
@@ -45,12 +43,10 @@ const Page = () => {
   }, [])
 
   const handleGetBundle = async () => {
-    // Track InitiateCheckout once on both Facebook and TikTok (server-side + client-side)
+    // Track InitiateCheckout on both Facebook and TikTok (server-side only for accurate conversion tracking)
     await Promise.all([
-      trackInitiateCheckout(29.00),  // Facebook server-side
-      trackFacebookInitiateCheckoutClient(),  // Facebook client-side
-      trackTikTokInitiateCheckout(29.00, 'VidsReels Bundle'),  // TikTok server-side
-      trackTikTokInitiateCheckoutClient()  // TikTok client-side
+      trackInitiateCheckout(),  // Facebook server-side (no value)
+      trackTikTokInitiateCheckout()  // TikTok server-side (no value)
     ])
     
     // Redirect to Stripe checkout
