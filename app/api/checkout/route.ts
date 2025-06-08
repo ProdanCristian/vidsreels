@@ -18,7 +18,9 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      const session = await stripe.checkout.sessions.retrieve(sessionId)
+      const session = await stripe.checkout.sessions.retrieve(sessionId, {
+        expand: ['customer']
+      })
       return NextResponse.json(session)
     }
 

@@ -6,6 +6,7 @@ import { FaTiktok, FaInstagram, FaYoutube, FaEye, FaFire } from 'react-icons/fa'
 import { HiCheckCircle } from 'react-icons/hi'
 import { AiFillStar } from 'react-icons/ai'
 import { useRouter } from 'next/navigation'
+import { trackPreviewClick, trackHighIntent } from '@/lib/facebook-tracking'
 
 interface HeroProps {
   onGetBundle?: () => void
@@ -13,6 +14,20 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onGetBundle }) => {
   const router = useRouter()
+
+  const handlePreviewClick = () => {
+    // Track medium interest - user wants to see content before buying
+    trackPreviewClick('Hero Section')
+    router.push('/preview')
+  }
+
+  const handleGetBundleClick = () => {
+    // Track high interest - user ready to purchase
+    trackHighIntent('Checkout Button Clicked', 'Hero Section')
+    if (onGetBundle) {
+      onGetBundle()
+    }
+  }
 
   return (
     <section className="relative min-h-screen">
@@ -113,12 +128,12 @@ const Hero: React.FC<HeroProps> = ({ onGetBundle }) => {
         
         <nav className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up [animation-delay:0.5s] px-4">
                      <button 
-             onClick={onGetBundle}
+             onClick={handleGetBundleClick}
              className="cursor-pointer w-full sm:w-auto px-8 sm:px-10 py-4 sm:py-5 bg-gradient-to-r from-yellow-400 to-orange-400 text-black rounded-full font-bold text-lg sm:text-xl hover:from-yellow-500 hover:to-orange-500 transition-all duration-300 animate-pulse-cta shadow-lg hover:shadow-xl"
            >
              <FaFire className="inline w-5 h-5 mr-2" /> Get 15,000 Reels – $29 (was $199)
            </button>
-           <button onClick={() => router.push('/preview')} className="cursor-pointer w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-secondary border border-border rounded-full font-semibold text-base sm:text-lg hover:bg-secondary/80 transition-all duration-300 hover:scale-105">
+           <button onClick={handlePreviewClick} className="cursor-pointer w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-secondary border border-border rounded-full font-semibold text-base sm:text-lg hover:bg-secondary/80 transition-all duration-300 hover:scale-105">
              <FaEye className="inline w-4 h-4 mr-2" /> Preview reels
            </button>
         </nav>

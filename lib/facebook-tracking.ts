@@ -7,6 +7,9 @@ interface FacebookEventData {
   lastName?: string;
   phone?: string;
   country?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
   currency?: string;
   value?: number;
   orderId?: string;
@@ -14,6 +17,9 @@ interface FacebookEventData {
   contentCategory?: string;
   userAgent?: string;
   sourceUrl?: string;
+  interestLevel?: string;
+  actionType?: string;
+  location?: string;
 }
 
 export async function trackFacebookEvent(eventData: FacebookEventData): Promise<boolean> {
@@ -50,25 +56,85 @@ export function trackViewContent() {
     eventName: 'ViewContent',
     contentName: '15,000 Viral Reels Bundle',
     contentCategory: 'Digital Products',
+    userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
   });
 }
 
 // Track when someone starts checkout
-export function trackInitiateCheckout(value: number = 29.00) {
+export function trackInitiateCheckout(value: number = 29.00, buttonLocation?: string) {
   return trackFacebookEvent({
     eventName: 'InitiateCheckout',
     currency: 'USD',
     value,
+    userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+    contentName: buttonLocation ? `Checkout from ${buttonLocation}` : 'Checkout Initiated',
+    contentCategory: 'Button Click',
   });
 }
 
+// Track custom button interactions with proper event type
+export function trackButtonClick(buttonLocation: string, buttonText?: string, interestLevel: 'High' | 'Medium' | 'Low' = 'Medium') {
+  return trackFacebookEvent({
+    eventName: 'Lead', // Better event type for button clicks
+    contentName: `${buttonText || 'Button'} Clicked`,
+    contentCategory: `${interestLevel} Interest Button`,
+    interestLevel,
+    actionType: 'Button Click',
+    location: buttonLocation,
+    userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+  });
+}
+
+// Track user interest levels based on actions
+export function trackUserInterest(interestLevel: 'High' | 'Medium' | 'Low', action: string, location: string) {
+  return trackFacebookEvent({
+    eventName: 'ViewContent',
+    contentName: `${interestLevel} Interest: ${action}`,
+    contentCategory: `User Intent - ${location}`,
+    interestLevel,
+    actionType: action,
+    location,
+    userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+  });
+}
+
+// Track preview interactions (medium interest)
+export function trackPreviewClick(location: string) {
+  return trackButtonClick(location, 'Preview Reels', 'Medium');
+}
+
+// Track high-intent actions (ready to buy)
+export function trackHighIntent(action: string, location: string) {
+  return trackButtonClick(location, action, 'High');
+}
+
+// Track engagement actions (browsing, exploring)
+export function trackEngagement(action: string, location: string) {
+  return trackUserInterest('Low', action, location);
+}
+
 // Track purchase completion
-export function trackPurchase(email?: string, firstName?: string, lastName?: string, orderId?: string) {
+export function trackPurchase(
+  email?: string, 
+  firstName?: string, 
+  lastName?: string, 
+  orderId?: string,
+  phone?: string,
+  country?: string,
+  city?: string,
+  state?: string,
+  postalCode?: string
+) {
   return trackFacebookEvent({
     eventName: 'Purchase',
     email,
     firstName,
     lastName,
+    phone,
+    country,
+    city,
+    state,
+    postalCode,
     currency: 'USD',
     value: 29.00,
     orderId,

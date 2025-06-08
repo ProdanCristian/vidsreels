@@ -23,14 +23,25 @@ const Page = () => {
   const { elementRef, isVisible } = useScrollTrigger({ threshold: 0.1, rootMargin: '0px 0px -200px 0px' })
   const { isVisible: isVisibleSimple } = useSimpleScrollTrigger('bonus-reveal')
 
-  // Track ViewContent when page loads
+  // Track ViewContent when page loads and handle checkout parameter
   useEffect(() => {
     trackViewContent()
+    
+    // Check if user came from preview page with checkout intent
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search)
+      if (urlParams.get('checkout') === 'true') {
+        // Auto-trigger checkout for users coming from preview page
+        setTimeout(() => {
+          handleGetBundle('Preview Page Redirect')
+        }, 500) // Small delay to ensure page is loaded
+      }
+    }
   }, [])
 
-  const handleGetBundle = async () => {
-    // Track InitiateCheckout before redirecting
-    await trackInitiateCheckout()
+  const handleGetBundle = async (buttonLocation: string = 'Unknown') => {
+    // Track InitiateCheckout with button location before redirecting
+    await trackInitiateCheckout(29.00, buttonLocation)
     
     // Redirect to Stripe checkout
     await redirectToCheckout()
@@ -38,7 +49,7 @@ const Page = () => {
 
   return (
     <div className="bg-background min-h-screen">
-      <Hero onGetBundle={handleGetBundle} />
+      <Hero onGetBundle={() => handleGetBundle('Hero Section')} />
       <Niches />
       <Editing />
       <HowItWorks />
@@ -49,14 +60,14 @@ const Page = () => {
       <Benefits />
       <Testimonials />
       <ValueStack />
-      <Guarantee onGetBundle={handleGetBundle} />
+      <Guarantee onGetBundle={() => handleGetBundle('Guarantee Section')} />
       <FAQMain />
       <Footer />
       
       {/* Sticky CTA Button */}
       <StickyCTAButton 
         isVisible={isVisible || isVisibleSimple} 
-        onGetBundle={handleGetBundle}
+        onGetBundle={() => handleGetBundle('Sticky Button')}
       />
     </div>
   )

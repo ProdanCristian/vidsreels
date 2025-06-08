@@ -18,8 +18,6 @@ const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: false
   },
-  debug: true,
-  logger: true,
   connectionTimeout: 10000,
   greetingTimeout: 5000,
   socketTimeout: 10000,
@@ -74,12 +72,7 @@ export async function POST(request: NextRequest) {
     const isTestMode = process.env.EMAIL_TEST_MODE === 'true'
     const emailRecipient = isTestMode ? process.env.SMTP_USER : customerEmail
 
-    // Debug logging
-    console.log('🔍 Email Debug Info:')
-    console.log('- Customer Email:', customerEmail)
-    console.log('- Test Mode:', isTestMode)
-    console.log('- Email Recipient:', emailRecipient)
-    console.log('- Environment EMAIL_TEST_MODE:', process.env.EMAIL_TEST_MODE)
+
 
     // Email HTML template
     const emailHtml = `

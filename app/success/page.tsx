@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react'
 import { CheckCircle, Download, Play, Palette, Film, Mail, MailCheck } from 'lucide-react'
-import { trackPurchase } from '@/lib/facebook-tracking'
 
 
 export default function SuccessPage() {
@@ -72,6 +71,8 @@ export default function SuccessPage() {
     }
   }
 
+
+
   const trackFacebookPurchase = async (sessionId: string) => {
     try {
       // Get customer data from Stripe session
@@ -94,14 +95,47 @@ export default function SuccessPage() {
       const stripeData = await stripeResponse.json()
       const customerEmail = stripeData.customer_details?.email
       const customerName = stripeData.customer_details?.name
+      const customerPhone = stripeData.customer_details?.phone
+      const billingAddress = stripeData.customer_details?.address
+      
+      // Extract country and location data
+      const country = billingAddress?.country
+      const city = billingAddress?.city
+      const state = billingAddress?.state
+      const postalCode = billingAddress?.postal_code
 
-      // Track purchase using utility function
-      await trackPurchase(
-        customerEmail,
-        customerName?.split(' ')[0],
-        customerName?.split(' ').slice(1).join(' '),
-        sessionId
-      )
+      // Send comprehensive purchase event to Facebook
+      const facebookResponse = await fetch('/api/facebook-conversion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          eventName: 'Purchase',
+          email: customerEmail,
+          firstName: customerName?.split(' ')[0],
+          lastName: customerName?.split(' ').slice(1).join(' '),
+          phone: customerPhone,
+          country: country,
+          city: city,
+          state: state,
+          postalCode: postalCode,
+          currency: 'USD',
+          value: 29.00,
+          orderId: sessionId,
+          contentName: '15,000 Viral Reels Bundle - Purchase Completed',
+          contentCategory: 'Digital Product Purchase',
+          userAgent: navigator.userAgent,
+          sourceUrl: window.location.href,
+        }),
+      })
+
+      if (facebookResponse.ok) {
+        const result = await facebookResponse.json()
+        console.log('Facebook Purchase event tracked successfully:', result.eventId)
+      } else {
+        console.error('Failed to track Facebook Purchase event')
+      }
     } catch (error) {
       console.error('Error tracking Facebook Purchase event:', error)
     }

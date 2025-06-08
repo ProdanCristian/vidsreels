@@ -32,12 +32,20 @@ export async function POST(request: NextRequest) {
       firstName, 
       lastName, 
       phone, 
-      country, 
+      country,
+      city,
+      state,
+      postalCode,
       currency = 'USD', 
       value, 
       orderId,
       userAgent,
-      sourceUrl 
+      sourceUrl,
+      contentName,
+      contentCategory,
+      interestLevel,
+      actionType,
+      location
     } = body;
 
     // Validate required fields
@@ -74,11 +82,41 @@ export async function POST(request: NextRequest) {
       userData.country = [hashData(country)];
     }
 
+    if (city) {
+      userData.ct = [hashData(city)];
+    }
+
+    if (state) {
+      userData.st = [hashData(state)];
+    }
+
+    if (postalCode) {
+      userData.zp = [hashData(postalCode)];
+    }
+
+    // For events without customer data, we need to include client_user_agent
+    // This is required for proper event matching
+    if (userAgent) {
+      userData.client_user_agent = userAgent;
+    }
+
+    // Add client IP if available (helps with matching)
+    const clientIp = request.headers.get('x-forwarded-for') || 
+                     request.headers.get('x-real-ip');
+    if (clientIp) {
+      userData.client_ip_address = clientIp.split(',')[0].trim();
+    }
+
     // Prepare custom data
     const customData: Record<string, string> = {};
     if (currency) customData.currency = currency;
     if (value) customData.value = value.toString();
     if (orderId) customData.order_id = orderId;
+    if (contentName) customData.content_name = contentName;
+    if (contentCategory) customData.content_category = contentCategory;
+    if (interestLevel) customData.interest_level = interestLevel;
+    if (actionType) customData.action_type = actionType;
+    if (location) customData.button_location = location;
 
     // Build the event payload
     const eventData = {
@@ -91,10 +129,7 @@ export async function POST(request: NextRequest) {
       custom_data: customData,
     };
 
-    // Add user agent if provided
-    if (userAgent) {
-      eventData.user_data.client_user_agent = userAgent;
-    }
+    // User agent is already added to userData above, no need to add it again here
 
     const payload = {
       data: [eventData],
@@ -127,6 +162,7 @@ export async function POST(request: NextRequest) {
       eventName,
       eventId,
       email: email ? `${email.substring(0, 3)}***` : 'not provided',
+      contentName: contentName || 'not provided',
       result
     });
 
