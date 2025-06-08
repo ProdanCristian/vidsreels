@@ -11,11 +11,6 @@ declare global {
       version?: string;
       track: (event: string, data?: Record<string, unknown>) => void;
     };
-    ttq?: {
-      methods?: string[];
-      track: (event: string, data?: Record<string, unknown>) => void;
-    };
-    TiktokAnalyticsObject?: string;
   }
 }
 
@@ -68,7 +63,7 @@ export default function DebugPixelsPage() {
       if (typeof window !== 'undefined' && window.ttq) {
         tiktokStatus.loaded = true
         tiktokStatus.pixelId = 'D12M6FBC77U53580S2M0'
-        tiktokStatus.methods = window.ttq.methods || []
+        tiktokStatus.methods = (window.ttq as any).methods || []
       } else {
         tiktokStatus.error = 'TikTok Pixel (ttq) not found on window object'
       }
@@ -107,12 +102,21 @@ export default function DebugPixelsPage() {
   const testTikTokEvent = () => {
     try {
       if (window.ttq) {
+        // Test with enhanced format
         window.ttq.track('ViewContent', {
-          content_name: 'Debug Test Event',
+          contents: [
+            {
+              content_id: 'debug_test_product',
+              content_type: 'product',
+              content_name: 'Debug Test Event'
+            }
+          ],
           value: 29,
           currency: 'USD'
+        }, {
+          event_id: `debug_${Date.now()}_${Math.floor(Math.random() * 1000)}`
         })
-        alert('TikTok test event sent! Check browser console for details.')
+        alert('TikTok test event sent with enhanced format! Check browser console for details.')
       } else {
         alert('TikTok Pixel not loaded')
       }
@@ -174,7 +178,7 @@ export default function DebugPixelsPage() {
           <CardContent>
             {pixelStatus.tiktok.loaded ? (
               <div className="space-y-2">
-                <p><strong>Methods:</strong> {pixelStatus.tiktok.methods.length} available</p>
+                <p><strong>Methods:</strong> {pixelStatus.tiktok.methods?.length || 0} available</p>
                 <p><strong>Status:</strong> ✅ Ready</p>
                 <Button onClick={testTikTokEvent} className="w-full">
                   Test TikTok Event

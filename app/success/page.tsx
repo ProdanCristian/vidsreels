@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { CheckCircle, Download, Play, Palette, Film, Mail, MailCheck } from 'lucide-react'
+import { trackTikTokPurchaseClient } from '@/lib/tiktok-tracking'
 
 
 export default function SuccessPage() {
@@ -23,6 +24,7 @@ export default function SuccessPage() {
         sendDownloadEmail(id)
         trackFacebookPurchase(id)
         trackTikTokPurchase(id)
+        trackTikTokPurchaseClientWithData(id)
       }
     }
     
@@ -196,6 +198,42 @@ export default function SuccessPage() {
       }
     } catch (error) {
       console.error('Error tracking Facebook Purchase event:', error)
+    }
+  }
+
+  const trackTikTokPurchaseClientWithData = async (sessionId: string) => {
+    try {
+      // Get customer data from Stripe session
+      const stripeResponse = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          action: 'get_session',
+          sessionId 
+        }),
+      })
+
+      if (!stripeResponse.ok) {
+        console.error('Failed to get Stripe session data for client-side TikTok tracking')
+        return
+      }
+
+      const stripeData = await stripeResponse.json()
+      const customerEmail = stripeData.customer_details?.email
+      const customerPhone = stripeData.customer_details?.phone
+
+      // Track with client-side TikTok pixel using enhanced format
+      await trackTikTokPurchaseClient({
+        email: customerEmail,
+        phone: customerPhone,
+        externalId: sessionId
+      })
+
+      console.log('TikTok client-side Purchase event tracked with customer data')
+    } catch (error) {
+      console.error('Error tracking TikTok client-side Purchase event:', error)
     }
   }
 

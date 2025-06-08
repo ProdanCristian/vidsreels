@@ -1,4 +1,15 @@
 // TikTok Events API tracking utilities
+import { hashSHA256Client, generateEventId } from './hash-utils'
+
+// Extend window interface for TikTok pixel
+declare global {
+  interface Window {
+    ttq?: {
+      identify: (data: Record<string, string>) => void;
+      track: (event: string, data: Record<string, unknown>, options?: Record<string, string>) => void;
+    };
+  }
+}
 
 interface TikTokEventData {
   eventName: string;
@@ -150,4 +161,88 @@ export function trackTikTokCompleteRegistration(email?: string) {
     contentName: 'VidsReels Account Registration',
     contentType: 'registration',
   });
+}
+
+// ===== CLIENT-SIDE TRACKING FUNCTIONS =====
+// These use the TikTok pixel directly in the browser
+
+export async function trackTikTokViewContentClient() {
+  if (typeof window !== 'undefined' && window.ttq) {
+    const eventId = generateEventId()
+    
+    window.ttq.track('ViewContent', {
+      contents: [
+        {
+          content_id: 'vidsreels_bundle_15k',
+          content_type: 'product',
+          content_name: 'VidsReels 15,000 Bundle'
+        }
+      ],
+      value: 29,
+      currency: 'USD'
+    }, {
+      event_id: eventId
+    })
+  }
+}
+
+export async function trackTikTokInitiateCheckoutClient() {
+  if (typeof window !== 'undefined' && window.ttq) {
+    const eventId = generateEventId()
+    
+    window.ttq.track('InitiateCheckout', {
+      contents: [
+        {
+          content_id: 'vidsreels_bundle_15k',
+          content_type: 'product',
+          content_name: 'VidsReels 15,000 Bundle'
+        }
+      ],
+      value: 29,
+      currency: 'USD'
+    }, {
+      event_id: eventId
+    })
+  }
+}
+
+export async function trackTikTokPurchaseClient(customerData?: {
+  email?: string
+  phone?: string
+  externalId?: string
+}) {
+  if (typeof window !== 'undefined' && window.ttq) {
+    const eventId = generateEventId()
+    
+    // Hash PII data if provided
+    if (customerData?.email || customerData?.phone || customerData?.externalId) {
+      const identifyData: Record<string, string> = {}
+      
+      if (customerData.email) {
+        identifyData.email = await hashSHA256Client(customerData.email)
+      }
+      if (customerData.phone) {
+        identifyData.phone_number = await hashSHA256Client(customerData.phone)
+      }
+      if (customerData.externalId) {
+        identifyData.external_id = await hashSHA256Client(customerData.externalId)
+      }
+      
+      window.ttq.identify(identifyData)
+    }
+    
+    window.ttq.track('Purchase', {
+      contents: [
+        {
+          content_id: 'vidsreels_bundle_15k',
+          content_type: 'product',
+          content_name: 'VidsReels 15,000 Bundle'
+        }
+      ],
+      value: 29,
+      currency: 'USD'
+    }, {
+      event_id: eventId
+    })
+  }
 } 
