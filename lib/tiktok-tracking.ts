@@ -68,17 +68,15 @@ export function trackTikTokViewContent() {
     contentName: '15,000 Viral Reels Bundle',
     contentType: 'product',
     contentId: 'viral-reels-bundle',
-    value: 29.00,
-    currency: 'USD',
+    // No value/currency for ViewContent - only for actual purchases
   });
 }
 
 // Track when someone starts checkout
-export function trackTikTokInitiateCheckout(value: number = 29.00, contentName?: string) {
+export function trackTikTokInitiateCheckout(value?: number, contentName?: string) {
   return trackTikTokEvent({
     eventName: 'InitiateCheckout',
-    currency: 'USD',
-    value,
+    // No value/currency for InitiateCheckout - only for actual purchases
     contentName: contentName || 'VidsReels Bundle Checkout',
     contentType: 'product',
     contentId: 'viral-reels-bundle',
@@ -130,9 +128,8 @@ export async function trackTikTokViewContentClient() {
           content_type: 'product',
           content_name: 'VidsReels 15,000 Bundle'
         }
-      ],
-      value: 29,
-      currency: 'USD'
+      ]
+      // No value/currency for ViewContent - only for actual purchases
     }, {
       event_id: eventId
     })
@@ -150,9 +147,8 @@ export async function trackTikTokInitiateCheckoutClient() {
           content_type: 'product',
           content_name: 'VidsReels 15,000 Bundle'
         }
-      ],
-      value: 29,
-      currency: 'USD'
+      ]
+      // No value/currency for InitiateCheckout - only for actual purchases
     }, {
       event_id: eventId
     })
@@ -165,38 +161,62 @@ export async function trackTikTokPurchaseClient(customerData?: {
   externalId?: string
 }) {
   if (typeof window !== 'undefined' && window.ttq) {
-    const eventId = generateEventId()
-    
-    // Hash PII data if provided
-    if (customerData?.email || customerData?.phone || customerData?.externalId) {
-      const identifyData: Record<string, string> = {}
+    try {
+      const eventId = generateEventId()
       
-      if (customerData.email) {
-        identifyData.email = await hashSHA256Client(customerData.email)
-      }
-      if (customerData.phone) {
-        identifyData.phone_number = await hashSHA256Client(customerData.phone)
-      }
-      if (customerData.externalId) {
-        identifyData.external_id = await hashSHA256Client(customerData.externalId)
-      }
-      
-      window.ttq.identify(identifyData)
-    }
-    
-    window.ttq.track('Purchase', {
-      contents: [
-        {
-          content_id: 'vidsreels_bundle_15k',
-          content_type: 'product',
-          content_name: 'VidsReels 15,000 Bundle'
+      // Hash PII data if provided
+      if (customerData?.email || customerData?.phone || customerData?.externalId) {
+        const identifyData: Record<string, string> = {}
+        
+        if (customerData.email) {
+          identifyData.email = await hashSHA256Client(customerData.email)
         }
-      ],
-      value: 29,
-      currency: 'USD'
-    }, {
-      event_id: eventId
-    })
+        if (customerData.phone) {
+          identifyData.phone_number = await hashSHA256Client(customerData.phone)
+        }
+        if (customerData.externalId) {
+          identifyData.external_id = await hashSHA256Client(customerData.externalId)
+        }
+        
+        window.ttq.identify(identifyData)
+      }
+      
+      window.ttq.track('Purchase', {
+        contents: [
+          {
+            content_id: 'vidsreels_bundle_15k',
+            content_type: 'product',
+            content_name: 'VidsReels 15,000 Bundle'
+          }
+        ],
+        value: 29,
+        currency: 'USD'
+      }, {
+        event_id: eventId
+      })
+    } catch (error) {
+      console.error('Error tracking TikTok Purchase client-side:', error)
+      
+      // Fallback: Track without PII data if hashing fails
+      try {
+        const eventId = generateEventId()
+        window.ttq.track('Purchase', {
+          contents: [
+            {
+              content_id: 'vidsreels_bundle_15k',
+              content_type: 'product',
+              content_name: 'VidsReels 15,000 Bundle'
+            }
+          ],
+          value: 29,
+          currency: 'USD'
+        }, {
+          event_id: eventId
+        })
+      } catch (fallbackError) {
+        console.error('Error with TikTok Purchase fallback tracking:', fallbackError)
+      }
+    }
   }
 }
 
@@ -216,9 +236,8 @@ export async function trackTikTokButtonClickClient(buttonLocation: string, butto
             content_type: 'product',
             content_name: buttonText || 'VidsReels Bundle'
           }
-        ],
-        value: 29,
-        currency: 'USD'
+        ]
+        // No value/currency for InitiateCheckout - only for actual purchases
       }, {
         event_id: eventId
       })
@@ -231,9 +250,8 @@ export async function trackTikTokButtonClickClient(buttonLocation: string, butto
             content_type: 'product',
             content_name: buttonText || 'Button Interaction'
           }
-        ],
-        value: 29,
-        currency: 'USD'
+        ]
+        // No value/currency for ViewContent - only for actual purchases
       }, {
         event_id: eventId
       })

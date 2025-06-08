@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from 'react'
 import { FaPlay, FaFire, FaEye, FaArrowLeft } from 'react-icons/fa'
 import { useRouter } from 'next/navigation'
-import { trackUserInterest, trackInitiateCheckout } from '@/lib/facebook-tracking'
+import { trackInitiateCheckout, trackFacebookButtonClickClient } from '@/lib/facebook-tracking'
+import { trackTikTokButtonClickClient } from '@/lib/tiktok-tracking'
 
 export default function PreviewPage() {
   const router = useRouter()
@@ -28,37 +29,59 @@ export default function PreviewPage() {
   ]
 
   useEffect(() => {
-    // Track that user visited preview page (medium interest) - only once
+    // Track that user visited preview page - only once
     if (!hasTrackedPageVisit) {
-      trackUserInterest('Medium', 'Preview Page Visited', 'Preview Page')
+      const trackPageVisit = async () => {
+        try {
+          trackFacebookButtonClickClient('Preview Page', 'Preview Page Visited')
+          await trackTikTokButtonClickClient('Preview Page', 'Preview Page Visited')
+        } catch (error) {
+          console.error('Error tracking preview page visit:', error)
+        }
+      }
+      trackPageVisit()
       setHasTrackedPageVisit(true)
     }
   }, [hasTrackedPageVisit])
 
-  const handleVideoPlay = (index: number) => {
+  const handleVideoPlay = async (index: number) => {
     setCurrentVideo(index)
     setIsPlaying(true)
     setHasViewedVideos(true)
     
-    // Track video engagement (medium to high interest)
-    trackUserInterest('Medium', `Video ${index + 1} Played`, 'Preview Page')
+    // Track video engagement with client-side tracking
+    try {
+      trackFacebookButtonClickClient('Preview Page', `Video ${index + 1} Played`)
+      await trackTikTokButtonClickClient('Preview Page', `Video ${index + 1} Played`)
+    } catch (error) {
+      console.error('Error tracking video play:', error)
+    }
   }
 
-  const handleCheckoutClick = () => {
-    // Track high interest - user has previewed content and wants to buy
-    const interestLevel = hasViewedVideos ? 'High' : 'Medium'
+  const handleCheckoutClick = async () => {
+    // Track checkout intent with both client-side and server-side
     const action = hasViewedVideos ? 'Checkout After Preview' : 'Checkout from Preview Page'
     
-    trackUserInterest(interestLevel, action, 'Preview Page')
-    trackInitiateCheckout(29.00, 'Preview Page')
+    try {
+      trackFacebookButtonClickClient('Preview Page', action)
+      await trackTikTokButtonClickClient('Preview Page', action)
+      await trackInitiateCheckout(29.00, 'Preview Page')
+    } catch (error) {
+      console.error('Error tracking checkout click:', error)
+    }
     
     // Navigate to home page and trigger checkout
     router.push('/?checkout=true')
   }
 
-  const handleBackToHome = () => {
-    // Track user leaving preview page
-    trackUserInterest('Low', 'Back to Home from Preview', 'Preview Page')
+  const handleBackToHome = async () => {
+    try {
+      // Track user leaving preview page
+      trackFacebookButtonClickClient('Preview Page', 'Back to Home from Preview')
+      await trackTikTokButtonClickClient('Preview Page', 'Back to Home from Preview')
+    } catch (error) {
+      console.error('Error tracking back to home:', error)
+    }
     router.push('/')
   }
 

@@ -63,14 +63,13 @@ export function trackViewContent() {
 }
 
 // Track when someone starts checkout
-export function trackInitiateCheckout(value: number = 29.00, buttonLocation?: string) {
+export function trackInitiateCheckout(value?: number, buttonLocation?: string) {
   return trackFacebookEvent({
     eventName: 'InitiateCheckout',
-    currency: 'USD',
-    value,
+    // No value/currency for InitiateCheckout - only for actual purchases
     userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
-    contentName: buttonLocation ? `Checkout from ${buttonLocation}` : 'Checkout Initiated',
-    contentCategory: 'Button Click',
+    contentName: buttonLocation ? `Initiate Checkout from ${buttonLocation}` : 'Initiate Checkout',
+    contentCategory: 'Checkout Intent',
   });
 }
 
@@ -90,9 +89,8 @@ export function trackFacebookViewContentClient() {
   if (typeof window !== 'undefined' && window.fbq) {
     window.fbq('track', 'ViewContent', {
       content_name: '15,000 Viral Reels Bundle',
-      content_category: 'Digital Products',
-      value: 29,
-      currency: 'USD'
+      content_category: 'Digital Products'
+      // No value/currency for ViewContent - only for actual purchases
     })
   }
 }
@@ -101,9 +99,8 @@ export function trackFacebookInitiateCheckoutClient() {
   if (typeof window !== 'undefined' && window.fbq) {
     window.fbq('track', 'InitiateCheckout', {
       content_name: 'VidsReels Bundle Checkout',
-      content_category: 'Purchase Intent',
-      value: 29,
-      currency: 'USD'
+      content_category: 'Purchase Intent'
+      // No value/currency for InitiateCheckout - only for actual purchases
     })
   }
 }
@@ -116,9 +113,8 @@ export function trackFacebookButtonClickClient(buttonLocation: string, buttonTex
         buttonText?.toLowerCase().includes('checkout')) {
       window.fbq('track', 'InitiateCheckout', {
         content_name: buttonText || 'Checkout Button',
-        content_category: 'Purchase Intent',
-        value: 29,
-        currency: 'USD'
+        content_category: 'Purchase Intent'
+        // No value/currency - only for actual purchases
       })
     } else {
       // For other buttons (preview, etc), use Lead

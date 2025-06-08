@@ -219,6 +219,8 @@ export default function SuccessPage() {
 
       if (!stripeResponse.ok) {
         console.error('Failed to get Stripe session data for client-side TikTok tracking')
+        // Fallback: Track without customer data
+        await trackTikTokPurchaseClient()
         return
       }
 
@@ -236,6 +238,14 @@ export default function SuccessPage() {
       console.log('TikTok client-side Purchase event tracked with customer data')
     } catch (error) {
       console.error('Error tracking TikTok client-side Purchase event:', error)
+      
+      // Fallback: Track basic purchase event without customer data
+      try {
+        await trackTikTokPurchaseClient()
+        console.log('TikTok client-side Purchase event tracked without customer data (fallback)')
+      } catch (fallbackError) {
+        console.error('Error with TikTok Purchase fallback tracking:', fallbackError)
+      }
     }
   }
 
