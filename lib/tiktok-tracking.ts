@@ -85,31 +85,7 @@ export function trackTikTokInitiateCheckout(value: number = 29.00, contentName?:
   });
 }
 
-// Track when someone adds payment info
-export function trackTikTokAddPaymentInfo(value: number = 29.00) {
-  return trackTikTokEvent({
-    eventName: 'AddPaymentInfo',
-    currency: 'USD',
-    value,
-    contentName: '15,000 Viral Reels Bundle',
-    contentType: 'product',
-    contentId: 'viral-reels-bundle',
-  });
-}
-
-// Track when someone places an order
-export function trackTikTokPlaceOrder(value: number = 29.00, orderId?: string) {
-  return trackTikTokEvent({
-    eventName: 'PlaceAnOrder',
-    currency: 'USD',
-    value,
-    contentName: '15,000 Viral Reels Bundle',
-    contentType: 'product',
-    contentId: orderId || 'viral-reels-bundle',
-  });
-}
-
-// Track purchase completion
+// Track purchase completion (server-side)
 export function trackTikTokPurchase(
   email?: string, 
   phone?: string,
@@ -132,36 +108,13 @@ export function trackTikTokPurchase(
   });
 }
 
-// Track search events (if you add search functionality)
-export function trackTikTokSearch(searchString: string) {
-  return trackTikTokEvent({
-    eventName: 'Search',
-    searchString,
-    contentName: 'VidsReels Search',
-    contentType: 'search',
-  });
-}
-
-// Track when someone adds to wishlist (if you add this feature)
-export function trackTikTokAddToWishlist(contentName: string) {
-  return trackTikTokEvent({
-    eventName: 'AddToWishlist',
-    contentName,
-    contentType: 'product',
-    value: 29.00,
-    currency: 'USD',
-  });
-}
-
-// Track registration/signup events
-export function trackTikTokCompleteRegistration(email?: string) {
-  return trackTikTokEvent({
-    eventName: 'CompleteRegistration',
-    email,
-    contentName: 'VidsReels Account Registration',
-    contentType: 'registration',
-  });
-}
+// Removed redundant server-side tracking functions:
+// - trackTikTokAddPaymentInfo
+// - trackTikTokPlaceOrder  
+// - trackTikTokSearch
+// - trackTikTokAddToWishlist
+// - trackTikTokCompleteRegistration
+// Only keeping essential events: ViewContent, InitiateCheckout, Purchase
 
 // ===== CLIENT-SIDE TRACKING FUNCTIONS =====
 // These use the TikTok pixel directly in the browser

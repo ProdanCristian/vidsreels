@@ -6,7 +6,6 @@ import { FaTiktok, FaInstagram, FaYoutube, FaEye, FaFire } from 'react-icons/fa'
 import { HiCheckCircle } from 'react-icons/hi'
 import { AiFillStar } from 'react-icons/ai'
 import { useRouter } from 'next/navigation'
-import { trackPreviewClick, trackHighIntent } from '@/lib/facebook-tracking'
 
 interface HeroProps {
   onGetBundle?: () => void
@@ -16,14 +15,12 @@ const Hero: React.FC<HeroProps> = ({ onGetBundle }) => {
   const router = useRouter()
 
   const handlePreviewClick = () => {
-    // Track medium interest - user wants to see content before buying
-    trackPreviewClick('Hero Section')
+    // Navigate to preview page (no server-side tracking needed)
     router.push('/preview')
   }
 
   const handleGetBundleClick = () => {
-    // Track high interest - user ready to purchase
-    trackHighIntent('Get 15,000 Reels Bundle', 'Hero Section')
+    // Trigger checkout (tracking handled in parent component)
     if (onGetBundle) {
       onGetBundle()
     }

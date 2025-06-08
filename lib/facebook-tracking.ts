@@ -74,60 +74,8 @@ export function trackInitiateCheckout(value: number = 29.00, buttonLocation?: st
   });
 }
 
-// Track custom button interactions with proper event type
-export function trackButtonClick(buttonLocation: string, buttonText?: string, interestLevel: 'High' | 'Medium' | 'Low' = 'Medium') {
-  // For high-intent checkout actions, use InitiateCheckout instead of Lead
-  if (interestLevel === 'High' && (buttonText?.toLowerCase().includes('checkout') || buttonText?.toLowerCase().includes('buy') || buttonText?.toLowerCase().includes('get'))) {
-    return trackFacebookEvent({
-      eventName: 'InitiateCheckout',
-      currency: 'USD',
-      value: 29.00,
-      contentName: buttonText || 'Checkout Button',
-      contentCategory: 'Purchase Intent',
-      actionType: 'Button Click',
-      location: buttonLocation,
-      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
-    });
-  }
-  
-  return trackFacebookEvent({
-    eventName: 'Lead',
-    contentName: buttonText || 'Button Interaction',
-    contentCategory: `${interestLevel} Interest Action`,
-    interestLevel,
-    actionType: 'Button Click',
-    location: buttonLocation,
-    userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
-  });
-}
-
-// Track user interest levels based on actions
-export function trackUserInterest(interestLevel: 'High' | 'Medium' | 'Low', action: string, location: string) {
-  return trackFacebookEvent({
-    eventName: 'ViewContent',
-    contentName: `${interestLevel} Interest: ${action}`,
-    contentCategory: `User Intent - ${location}`,
-    interestLevel,
-    actionType: action,
-    location,
-    userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
-  });
-}
-
-// Track preview interactions (medium interest)
-export function trackPreviewClick(location: string) {
-  return trackButtonClick(location, 'Preview Reels', 'Medium');
-}
-
-// Track high-intent actions (ready to buy)
-export function trackHighIntent(action: string, location: string) {
-  return trackButtonClick(location, action, 'High');
-}
-
-// Track engagement actions (browsing, exploring)
-export function trackEngagement(action: string, location: string) {
-  return trackUserInterest('Low', action, location);
-}
+// Removed redundant button tracking functions to prevent duplicate server-side events
+// Only keeping essential events: ViewContent, InitiateCheckout, Purchase
 
 // Track purchase completion
 export function trackPurchase(

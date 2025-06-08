@@ -43,10 +43,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <head />
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <head>
         {/* Facebook Pixel Code */}
-        <Script id="facebook-pixel" strategy="afterInteractive">
+        <Script id="facebook-pixel" strategy="beforeInteractive">
           {`
             !function(f,b,e,v,n,t,s)
             {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -61,8 +60,8 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* TikTok Pixel Code */}
-        <Script id="tiktok-pixel" strategy="afterInteractive">
+        {/* TikTok Pixel Code - Must be in head section */}
+        <Script id="tiktok-pixel" strategy="beforeInteractive">
           {`
             !function (w, d, t) {
               w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
@@ -72,6 +71,8 @@ export default function RootLayout({
             }(window, document, 'ttq');
           `}
         </Script>
+      </head>
+      <body className={`${inter.variable} font-sans antialiased`}>
         
         <ThemeProvider>
           <Header />

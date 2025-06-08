@@ -26,7 +26,7 @@ const Page = () => {
 
   // Track ViewContent when page loads and handle checkout parameter
   useEffect(() => {
-    // Track on both Facebook and TikTok (server-side + client-side)
+    // Track ViewContent on both Facebook and TikTok (server-side + client-side)
     trackViewContent()
     trackTikTokViewContent()
     trackTikTokViewContentClient()
@@ -37,18 +37,18 @@ const Page = () => {
       if (urlParams.get('checkout') === 'true') {
         // Auto-trigger checkout for users coming from preview page
         setTimeout(() => {
-          handleGetBundle('Preview Page Redirect')
+          handleGetBundle()
         }, 500) // Small delay to ensure page is loaded
       }
     }
   }, [])
 
-  const handleGetBundle = async (buttonLocation: string = 'Unknown') => {
-    // Track InitiateCheckout on both Facebook and TikTok before redirecting (server-side + client-side)
+  const handleGetBundle = async () => {
+    // Track InitiateCheckout once on both Facebook and TikTok (server-side + client-side)
     await Promise.all([
-      trackInitiateCheckout(29.00, buttonLocation),
-      trackTikTokInitiateCheckout(29.00, `${buttonLocation} - VidsReels Bundle`),
-      trackTikTokInitiateCheckoutClient()
+      trackInitiateCheckout(29.00),  // Server-side Facebook
+      trackTikTokInitiateCheckout(29.00, 'VidsReels Bundle'),  // Server-side TikTok
+      trackTikTokInitiateCheckoutClient()  // Client-side TikTok
     ])
     
     // Redirect to Stripe checkout
@@ -57,7 +57,7 @@ const Page = () => {
 
   return (
     <div className="bg-background min-h-screen">
-      <Hero onGetBundle={() => handleGetBundle('Hero Section')} />
+      <Hero onGetBundle={() => handleGetBundle()} />
       <Niches />
       <Editing />
       <HowItWorks />
@@ -68,14 +68,14 @@ const Page = () => {
       <Benefits />
       <Testimonials />
       <ValueStack />
-      <Guarantee onGetBundle={() => handleGetBundle('Guarantee Section')} />
+      <Guarantee onGetBundle={() => handleGetBundle()} />
       <FAQMain />
       <Footer />
       
       {/* Sticky CTA Button */}
       <StickyCTAButton 
         isVisible={isVisible || isVisibleSimple} 
-        onGetBundle={() => handleGetBundle('Sticky Button')}
+        onGetBundle={() => handleGetBundle()}
       />
     </div>
   )
