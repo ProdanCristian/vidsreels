@@ -1,0 +1,76 @@
+// Facebook Conversions API tracking utilities
+
+interface FacebookEventData {
+  eventName: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  country?: string;
+  currency?: string;
+  value?: number;
+  orderId?: string;
+  contentName?: string;
+  contentCategory?: string;
+  userAgent?: string;
+  sourceUrl?: string;
+}
+
+export async function trackFacebookEvent(eventData: FacebookEventData): Promise<boolean> {
+  try {
+    const response = await fetch('/api/facebook-conversion', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...eventData,
+        userAgent: eventData.userAgent || (typeof navigator !== 'undefined' ? navigator.userAgent : ''),
+        sourceUrl: eventData.sourceUrl || (typeof window !== 'undefined' ? window.location.href : ''),
+      }),
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log(`Facebook ${eventData.eventName} event tracked successfully:`, result.eventId);
+      return true;
+    } else {
+      console.error(`Failed to track Facebook ${eventData.eventName} event`);
+      return false;
+    }
+  } catch (error) {
+    console.error(`Error tracking Facebook ${eventData.eventName} event:`, error);
+    return false;
+  }
+}
+
+// Track when someone views the main page
+export function trackViewContent() {
+  return trackFacebookEvent({
+    eventName: 'ViewContent',
+    contentName: '15,000 Viral Reels Bundle',
+    contentCategory: 'Digital Products',
+  });
+}
+
+// Track when someone starts checkout
+export function trackInitiateCheckout(value: number = 29.00) {
+  return trackFacebookEvent({
+    eventName: 'InitiateCheckout',
+    currency: 'USD',
+    value,
+  });
+}
+
+// Track purchase completion
+export function trackPurchase(email?: string, firstName?: string, lastName?: string, orderId?: string) {
+  return trackFacebookEvent({
+    eventName: 'Purchase',
+    email,
+    firstName,
+    lastName,
+    currency: 'USD',
+    value: 29.00,
+    orderId,
+  });
+} 

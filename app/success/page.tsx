@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { CheckCircle, Download, Play, Palette, Film, Mail, MailCheck } from 'lucide-react'
+import { trackPurchase } from '@/lib/facebook-tracking'
 
 
 export default function SuccessPage() {
@@ -18,9 +19,10 @@ export default function SuccessPage() {
       const id = urlParams.get('session_id')
       setSessionId(id)
       
-      // Send email if we have a session ID
+      // Send email and track Facebook conversion if we have a session ID
       if (id) {
         sendDownloadEmail(id)
+        trackFacebookPurchase(id)
       }
     }
     
@@ -67,6 +69,41 @@ export default function SuccessPage() {
       }
     } finally {
       setEmailSending(false)
+    }
+  }
+
+  const trackFacebookPurchase = async (sessionId: string) => {
+    try {
+      // Get customer data from Stripe session
+      const stripeResponse = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          action: 'get_session',
+          sessionId 
+        }),
+      })
+
+      if (!stripeResponse.ok) {
+        console.error('Failed to get Stripe session data')
+        return
+      }
+
+      const stripeData = await stripeResponse.json()
+      const customerEmail = stripeData.customer_details?.email
+      const customerName = stripeData.customer_details?.name
+
+      // Track purchase using utility function
+      await trackPurchase(
+        customerEmail,
+        customerName?.split(' ')[0],
+        customerName?.split(' ').slice(1).join(' '),
+        sessionId
+      )
+    } catch (error) {
+      console.error('Error tracking Facebook Purchase event:', error)
     }
   }
 

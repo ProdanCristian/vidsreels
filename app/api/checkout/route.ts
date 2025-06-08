@@ -7,8 +7,22 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(request: NextRequest) {
   try {
-    const { priceId, quantity = 1 } = await request.json()
+    const { action, priceId, quantity = 1, sessionId } = await request.json()
 
+    // Handle getting session data
+    if (action === 'get_session') {
+      if (!sessionId) {
+        return NextResponse.json(
+          { error: 'Session ID is required' },
+          { status: 400 }
+        )
+      }
+
+      const session = await stripe.checkout.sessions.retrieve(sessionId)
+      return NextResponse.json(session)
+    }
+
+    // Handle creating checkout session
     if (!priceId) {
       return NextResponse.json(
         { error: 'Price ID is required' },
