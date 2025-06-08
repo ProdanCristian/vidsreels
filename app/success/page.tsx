@@ -289,7 +289,7 @@ export default function SuccessPage() {
                   <h3 className="text-xl font-bold text-foreground mb-2">15,000 Viral Reels</h3>
                   <p className="text-sm text-muted-foreground mb-4">Premium 4K luxury lifestyle content</p>
                 </div>
-                <button onClick={() => window.open('https://drive.google.com/drive/folders/1LJJu4HBpFgYNhqzCbeSp19Pz1btqvIZe?usp=drive_link', '_blank')} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105">
+                <button onClick={() => window.open('https://drive.google.com/drive/folders/1LO6IysSwEJwHVc0SR5vZGEpKXk7gciOf?usp=drive_link', '_blank')} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105">
                   <Download className="w-5 h-5 inline mr-2" />
                   Download Reels
                 </button>
