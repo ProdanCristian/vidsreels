@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
     const ACCESS_TOKEN = process.env.FACEBOOK_ACCESS_TOKEN;
     const PIXEL_ID = process.env.FACEBOOK_PIXEL_ID;
@@ -14,6 +14,11 @@ export async function POST() {
     const eventId = crypto.randomBytes(16).toString('hex');
     const eventTime = Math.floor(Date.now() / 1000);
 
+    // Get the correct source URL from the request
+    const host = request.headers.get('host') || 'localhost:3000';
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const sourceUrl = `${protocol}://${host}`;
+
     // Build the exact payload being sent to Facebook
     const payload = {
       data: [{
@@ -21,7 +26,7 @@ export async function POST() {
         event_time: eventTime,
         event_id: eventId,
         action_source: 'website',
-        event_source_url: 'http://localhost:3000',
+        event_source_url: sourceUrl,
         user_data: {
           client_ip_address: '127.0.0.1',
           client_user_agent: 'Test-Agent/1.0'
