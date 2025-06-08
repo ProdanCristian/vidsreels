@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
+import { logEventForMonitoring } from '@/lib/event-monitor'
 
 interface TikTokEventData {
   eventName: string
@@ -132,16 +133,32 @@ export async function POST(request: NextRequest) {
 
     if (tiktokResponse.ok) {
       // Log successful events (production-safe)
-      console.log(`✅ TikTok ${eventData.eventName} event sent successfully:`, {
+      const logData = {
         eventId,
         eventName: eventData.eventName,
         timestamp: new Date().toISOString(),
-        host: request.headers.get('host'),
+        host: request.headers.get('host') || '',
         userAgent: request.headers.get('user-agent')?.substring(0, 50) + '...',
         hasEmail: !!eventData.email,
         hasPhone: !!eventData.phone,
         value: properties.value,
         currency: properties.currency
+      };
+      
+      console.log(`✅ TikTok ${eventData.eventName} event sent successfully:`, logData);
+      
+      // Add to monitoring
+      logEventForMonitoring({
+        platform: 'TikTok',
+        eventName: eventData.eventName,
+        eventId,
+        success: true,
+        host: logData.host,
+        userAgent: logData.userAgent,
+        hasEmail: !!eventData.email,
+        hasPhone: !!eventData.phone,
+        value: properties.value?.toString(),
+        currency: properties.currency?.toString()
       });
 
       return NextResponse.json({ 
@@ -153,12 +170,29 @@ export async function POST(request: NextRequest) {
     } else {
       const errorResult = await tiktokResponse.json()
       
-      console.error(`❌ TikTok ${eventData.eventName} event failed:`, {
+      const errorData = {
         status: tiktokResponse.status,
         error: errorResult,
         eventId,
         timestamp: new Date().toISOString()
-      })
+      };
+      
+      console.error(`❌ TikTok ${eventData.eventName} event failed:`, errorData);
+      
+      // Add to monitoring
+      logEventForMonitoring({
+        platform: 'TikTok',
+        eventName: eventData.eventName,
+        eventId,
+        success: false,
+        host: request.headers.get('host') || '',
+        userAgent: request.headers.get('user-agent')?.substring(0, 50) + '...',
+        hasEmail: !!eventData.email,
+        hasPhone: !!eventData.phone,
+        value: properties.value?.toString(),
+        currency: properties.currency?.toString(),
+        error: JSON.stringify(errorResult)
+      });
       
       return NextResponse.json(
         { 

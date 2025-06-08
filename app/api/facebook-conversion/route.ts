@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { logEventForMonitoring } from '../monitor-events/route';
+import { logEventForMonitoring } from '@/lib/event-monitor';
 
 const ACCESS_TOKEN = process.env.FACEBOOK_ACCESS_TOKEN;
 

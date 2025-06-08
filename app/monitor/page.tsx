@@ -40,7 +40,7 @@ export default function MonitorPage() {
   const [authKey, setAuthKey] = useState('monitor-key-123')
   const [platform, setPlatform] = useState<'all' | 'Facebook' | 'TikTok'>('all')
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true)
     setError(null)
     
@@ -67,11 +67,11 @@ export default function MonitorPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [platform, authKey])
 
   useEffect(() => {
     fetchData()
-  }, [platform])
+  }, [fetchData])
 
   const formatTimestamp = (timestamp: string) => {
     return new Date(timestamp).toLocaleString()
