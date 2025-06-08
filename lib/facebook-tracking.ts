@@ -22,38 +22,8 @@ interface FacebookEventData {
   location?: string;
 }
 
-// Check if user came from Facebook ad
-function isFromFacebookAd(): boolean {
-  if (typeof window === 'undefined') return false;
-  
-  const urlParams = new URLSearchParams(window.location.search);
-  const referrer = document.referrer;
-  
-  // Check for Facebook UTM parameters
-  const hasFacebookUTM = urlParams.get('utm_source')?.toLowerCase().includes('facebook') ||
-                         urlParams.get('utm_medium')?.toLowerCase().includes('facebook') ||
-                         urlParams.get('utm_campaign') !== null;
-  
-  // Check for Facebook referrer
-  const hasFacebookReferrer = referrer.includes('facebook.com') || 
-                              referrer.includes('fb.com') ||
-                              referrer.includes('instagram.com');
-  
-  // Check for Facebook click ID (fbclid)
-  const hasFbclid = urlParams.get('fbclid') !== null;
-  
-  // For testing purposes, also allow localhost
-  const isLocalhost = window.location.hostname === 'localhost';
-  
-  return hasFacebookUTM || hasFacebookReferrer || hasFbclid || isLocalhost;
-}
-
 export async function trackFacebookEvent(eventData: FacebookEventData): Promise<boolean> {
-  // Only track if user came from Facebook ad
-  if (!isFromFacebookAd()) {
-    console.log('Skipping Facebook tracking - user did not come from Facebook ad');
-    return false;
-  }
+  // Track all traffic - Facebook's attribution system will handle matching
 
   try {
     const response = await fetch('/api/facebook-conversion', {

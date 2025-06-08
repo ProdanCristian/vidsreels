@@ -45,48 +45,19 @@ export default function RootLayout({
     <html lang="en" className="dark" suppressHydrationWarning>
       <head />
       <body className={`${inter.variable} font-sans antialiased`}>
-        {/* Facebook Pixel Code - Only for Facebook ad traffic */}
+        {/* Facebook Pixel Code */}
         <Script id="facebook-pixel" strategy="afterInteractive">
           {`
-            // Check if user came from Facebook ad
-            function isFromFacebookAd() {
-              const urlParams = new URLSearchParams(window.location.search);
-              const referrer = document.referrer;
-              
-              // Check for Facebook UTM parameters
-              const hasFacebookUTM = urlParams.get('utm_source')?.toLowerCase().includes('facebook') ||
-                                     urlParams.get('utm_medium')?.toLowerCase().includes('facebook') ||
-                                     urlParams.get('utm_campaign') !== null;
-              
-              // Check for Facebook referrer
-              const hasFacebookReferrer = referrer.includes('facebook.com') || 
-                                          referrer.includes('fb.com') ||
-                                          referrer.includes('instagram.com');
-              
-              // Check for Facebook click ID (fbclid)
-              const hasFbclid = urlParams.get('fbclid') !== null;
-              
-              // For testing purposes, also allow localhost
-              const isLocalhost = window.location.hostname === 'localhost';
-              
-              return hasFacebookUTM || hasFacebookReferrer || hasFbclid || isLocalhost;
-            }
-
-            // Only load Facebook Pixel if user came from Facebook ad
-            if (isFromFacebookAd()) {
-              !function(f,b,e,v,n,t,s)
-              {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-              n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-              if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-              n.queue=[];t=b.createElement(e);t.async=!0;
-              t.src=v;s=b.getElementsByTagName(e)[0];
-              s.parentNode.insertBefore(t,s)}(window, document,'script',
-              'https://connect.facebook.net/en_US/fbevents.js');
-              fbq('init', '690110657249043');
-              fbq('track', 'PageView');
-            } else {
-              console.log('Facebook Pixel not loaded - user did not come from Facebook ad');
-            }
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '690110657249043');
+            fbq('track', 'PageView');
           `}
         </Script>
 
