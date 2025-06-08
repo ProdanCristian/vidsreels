@@ -130,12 +130,8 @@ export async function POST(request: NextRequest) {
 
     // User agent is already added to userData above, no need to add it again here
 
-    // Determine test event code based on domain
-    const host = request.headers.get('host') || '';
-    const isLocalhost = host.includes('localhost');
-    const testEventCode = isLocalhost 
-      ? process.env.FACEBOOK_TEST_EVENT_CODE 
-      : process.env.FACEBOOK_TEST_EVENT_CODE_PROD;
+    // Use same test event code for both localhost and production
+    const testEventCode = process.env.FACEBOOK_TEST_EVENT_CODE;
 
     const payload = {
       data: [eventData],
