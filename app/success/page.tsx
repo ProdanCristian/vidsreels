@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { CheckCircle, Download, Play, Palette, Film, Mail, MailCheck } from 'lucide-react'
 import { trackTikTokPurchaseClient } from '@/lib/tiktok-tracking'
+import { trackFacebookPurchaseClient } from '@/lib/facebook-tracking'
 
 
 export default function SuccessPage() {
@@ -22,9 +23,10 @@ export default function SuccessPage() {
       // Send email and track conversions if we have a session ID
       if (id) {
         sendDownloadEmail(id)
-        trackFacebookPurchase(id)
-        trackTikTokPurchase(id)
-        trackTikTokPurchaseClientWithData(id)
+        trackFacebookPurchase(id)  // Facebook server-side
+        trackFacebookPurchaseClient()  // Facebook client-side
+        trackTikTokPurchase(id)  // TikTok server-side
+        trackTikTokPurchaseClientWithData(id)  // TikTok client-side with PII
       }
     }
     

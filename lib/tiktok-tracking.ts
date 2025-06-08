@@ -198,4 +198,45 @@ export async function trackTikTokPurchaseClient(customerData?: {
       event_id: eventId
     })
   }
+}
+
+// Client-side TikTok button tracking functions
+export async function trackTikTokButtonClickClient(buttonLocation: string, buttonText?: string) {
+  if (typeof window !== 'undefined' && window.ttq) {
+    const eventId = generateEventId()
+    
+    // For high-intent buttons (buy/checkout), use InitiateCheckout
+    if (buttonText?.toLowerCase().includes('get') || 
+        buttonText?.toLowerCase().includes('buy') || 
+        buttonText?.toLowerCase().includes('checkout')) {
+      window.ttq.track('InitiateCheckout', {
+        contents: [
+          {
+            content_id: 'vidsreels_bundle_15k',
+            content_type: 'product',
+            content_name: buttonText || 'VidsReels Bundle'
+          }
+        ],
+        value: 29,
+        currency: 'USD'
+      }, {
+        event_id: eventId
+      })
+    } else {
+      // For other buttons (preview, etc), use ViewContent
+      window.ttq.track('ViewContent', {
+        contents: [
+          {
+            content_id: 'vidsreels_bundle_15k',
+            content_type: 'product',
+            content_name: buttonText || 'Button Interaction'
+          }
+        ],
+        value: 29,
+        currency: 'USD'
+      }, {
+        event_id: eventId
+      })
+    }
+  }
 } 

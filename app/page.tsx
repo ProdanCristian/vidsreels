@@ -17,7 +17,7 @@ import StickyCTAButton from '@/components/ui/sticky-cta-button'
 import { useScrollTrigger } from '@/hooks/useScrollTrigger'
 import { useSimpleScrollTrigger } from '@/hooks/useSimpleScrollTrigger'
 import { redirectToCheckout } from '@/lib/checkout'
-import { trackViewContent, trackInitiateCheckout } from '@/lib/facebook-tracking'
+import { trackViewContent, trackInitiateCheckout, trackFacebookViewContentClient, trackFacebookInitiateCheckoutClient } from '@/lib/facebook-tracking'
 import { trackTikTokViewContent, trackTikTokInitiateCheckout, trackTikTokViewContentClient, trackTikTokInitiateCheckoutClient } from '@/lib/tiktok-tracking'
 
 const Page = () => {
@@ -27,9 +27,10 @@ const Page = () => {
   // Track ViewContent when page loads and handle checkout parameter
   useEffect(() => {
     // Track ViewContent on both Facebook and TikTok (server-side + client-side)
-    trackViewContent()
-    trackTikTokViewContent()
-    trackTikTokViewContentClient()
+    trackViewContent()  // Facebook server-side
+    trackFacebookViewContentClient()  // Facebook client-side
+    trackTikTokViewContent()  // TikTok server-side
+    trackTikTokViewContentClient()  // TikTok client-side
     
     // Check if user came from preview page with checkout intent
     if (typeof window !== 'undefined') {
@@ -46,9 +47,10 @@ const Page = () => {
   const handleGetBundle = async () => {
     // Track InitiateCheckout once on both Facebook and TikTok (server-side + client-side)
     await Promise.all([
-      trackInitiateCheckout(29.00),  // Server-side Facebook
-      trackTikTokInitiateCheckout(29.00, 'VidsReels Bundle'),  // Server-side TikTok
-      trackTikTokInitiateCheckoutClient()  // Client-side TikTok
+      trackInitiateCheckout(29.00),  // Facebook server-side
+      trackFacebookInitiateCheckoutClient(),  // Facebook client-side
+      trackTikTokInitiateCheckout(29.00, 'VidsReels Bundle'),  // TikTok server-side
+      trackTikTokInitiateCheckoutClient()  // TikTok client-side
     ])
     
     // Redirect to Stripe checkout

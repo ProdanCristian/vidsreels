@@ -6,6 +6,8 @@ import { FaTiktok, FaInstagram, FaYoutube, FaEye, FaFire } from 'react-icons/fa'
 import { HiCheckCircle } from 'react-icons/hi'
 import { AiFillStar } from 'react-icons/ai'
 import { useRouter } from 'next/navigation'
+import { trackFacebookButtonClickClient } from '@/lib/facebook-tracking'
+import { trackTikTokButtonClickClient } from '@/lib/tiktok-tracking'
 
 interface HeroProps {
   onGetBundle?: () => void
@@ -15,12 +17,20 @@ const Hero: React.FC<HeroProps> = ({ onGetBundle }) => {
   const router = useRouter()
 
   const handlePreviewClick = () => {
-    // Navigate to preview page (no server-side tracking needed)
+    // Track client-side button click for both platforms
+    trackFacebookButtonClickClient('Hero Section', 'Preview reels')
+    trackTikTokButtonClickClient('Hero Section', 'Preview reels')
+    
+    // Navigate to preview page
     router.push('/preview')
   }
 
   const handleGetBundleClick = () => {
-    // Trigger checkout (tracking handled in parent component)
+    // Track client-side button click for both platforms
+    trackFacebookButtonClickClient('Hero Section', 'Get 15,000 Reels – $29 (was $199)')
+    trackTikTokButtonClickClient('Hero Section', 'Get 15,000 Reels – $29 (was $199)')
+    
+    // Trigger checkout (server-side tracking handled in parent component)
     if (onGetBundle) {
       onGetBundle()
     }

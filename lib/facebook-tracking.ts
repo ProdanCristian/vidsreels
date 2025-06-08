@@ -74,8 +74,75 @@ export function trackInitiateCheckout(value: number = 29.00, buttonLocation?: st
   });
 }
 
-// Removed redundant button tracking functions to prevent duplicate server-side events
-// Only keeping essential events: ViewContent, InitiateCheckout, Purchase
+// ===== CLIENT-SIDE TRACKING FUNCTIONS =====
+// These use the Facebook pixel directly in the browser
+
+declare global {
+  interface Window {
+    fbq?: ((action: string, event: string, data?: Record<string, unknown>) => void) & {
+      version?: string;
+    };
+  }
+}
+
+// Client-side Facebook tracking for button interactions
+export function trackFacebookViewContentClient() {
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'ViewContent', {
+      content_name: '15,000 Viral Reels Bundle',
+      content_category: 'Digital Products',
+      value: 29,
+      currency: 'USD'
+    })
+  }
+}
+
+export function trackFacebookInitiateCheckoutClient() {
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'InitiateCheckout', {
+      content_name: 'VidsReels Bundle Checkout',
+      content_category: 'Purchase Intent',
+      value: 29,
+      currency: 'USD'
+    })
+  }
+}
+
+export function trackFacebookButtonClickClient(buttonLocation: string, buttonText?: string) {
+  if (typeof window !== 'undefined' && window.fbq) {
+    // For high-intent buttons (buy/checkout), use InitiateCheckout
+    if (buttonText?.toLowerCase().includes('get') || 
+        buttonText?.toLowerCase().includes('buy') || 
+        buttonText?.toLowerCase().includes('checkout')) {
+      window.fbq('track', 'InitiateCheckout', {
+        content_name: buttonText || 'Checkout Button',
+        content_category: 'Purchase Intent',
+        value: 29,
+        currency: 'USD'
+      })
+    } else {
+      // For other buttons (preview, etc), use Lead
+      window.fbq('track', 'Lead', {
+        content_name: buttonText || 'Button Interaction',
+        content_category: 'User Interest'
+      })
+    }
+  }
+}
+
+export function trackFacebookPurchaseClient() {
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'Purchase', {
+      value: 29,
+      currency: 'USD',
+      content_name: '15,000 Viral Reels Bundle - Purchase Completed',
+      content_category: 'Digital Product Purchase'
+    })
+  }
+}
+
+// Removed redundant server-side button tracking functions to prevent duplicate server-side events
+// Only keeping essential server-side events: ViewContent, InitiateCheckout, Purchase
 
 // Track purchase completion
 export function trackPurchase(

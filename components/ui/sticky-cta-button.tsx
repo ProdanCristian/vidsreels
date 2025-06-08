@@ -1,6 +1,8 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { trackFacebookButtonClickClient } from '@/lib/facebook-tracking'
+import { trackTikTokButtonClickClient } from '@/lib/tiktok-tracking'
 
 interface StickyCTAButtonProps {
   isVisible: boolean
@@ -8,6 +10,14 @@ interface StickyCTAButtonProps {
 }
 
 const StickyCTAButton: React.FC<StickyCTAButtonProps> = ({ isVisible, onGetBundle }) => {
+  const handleGetBundleClick = () => {
+    // Track client-side button click for both platforms
+    trackFacebookButtonClickClient('Sticky Button', 'Get The Bundle Now')
+    trackTikTokButtonClickClient('Sticky Button', 'Get The Bundle Now')
+    
+    // Trigger checkout (server-side tracking handled in parent component)
+    onGetBundle()
+  }
   const [timeLeft, setTimeLeft] = useState({
     minutes: 30,
     seconds: 0
@@ -66,7 +76,7 @@ const StickyCTAButton: React.FC<StickyCTAButtonProps> = ({ isVisible, onGetBundl
 
         {/* Main CTA Button */}
         <button
-          onClick={onGetBundle}
+          onClick={handleGetBundleClick}
           className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-bold py-3 px-4 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95"
         >
           <div className="text-center">
