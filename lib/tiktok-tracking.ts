@@ -131,37 +131,39 @@ export async function trackTikTokViewContentClient() {
 
 // Removed client-side Purchase - handled by server-side for accurate conversion tracking and revenue attribution
 
-// Client-side TikTok button tracking functions
+// Client-side TikTok button tracking functions - optimized like Facebook
 export async function trackTikTokButtonClickClient(buttonLocation: string, buttonText?: string) {
   if (typeof window !== 'undefined' && window.ttq) {
     const eventId = generateEventId()
     
-    // For high-intent buttons (buy/checkout), use ClickButton event
+    // For high-intent buttons (buy/checkout), use Contact event (TikTok's equivalent to Facebook Lead)
     if (buttonText?.toLowerCase().includes('get') || 
         buttonText?.toLowerCase().includes('buy') || 
         buttonText?.toLowerCase().includes('checkout')) {
-      window.ttq.track('ClickButton', {
+      window.ttq.track('Contact', {
         contents: [
           {
-            content_id: 'vidsreels_bundle_15k',
+            content_id: 'vidsreels_bundle_15k_high_intent',
             content_type: 'product',
-            content_name: buttonText || 'VidsReels Bundle'
+            content_name: buttonText || 'High Intent Button Click'
           }
-        ]
+        ],
+        description: 'High Intent Button Click'
         // No value/currency - button interactions don't have monetary value
       }, {
         event_id: eventId
       })
     } else {
-      // For other buttons (preview, etc), use ViewContent
+      // For other buttons (preview, explore, etc), use ViewContent with user interest category
       window.ttq.track('ViewContent', {
         contents: [
           {
-            content_id: 'vidsreels_bundle_15k',
+            content_id: 'vidsreels_bundle_15k_interest',
             content_type: 'product',
-            content_name: buttonText || 'Button Interaction'
+            content_name: buttonText || 'User Interest Button'
           }
-        ]
+        ],
+        description: 'User Interest'
         // No value/currency - button interactions don't have monetary value
       }, {
         event_id: eventId
