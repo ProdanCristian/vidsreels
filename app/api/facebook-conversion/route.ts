@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { logEventForMonitoring } from '../monitor-events/route';
 
-const FACEBOOK_API_VERSION = 'v21.0';
-const PIXEL_ID = process.env.FACEBOOK_PIXEL_ID;
 const ACCESS_TOKEN = process.env.FACEBOOK_ACCESS_TOKEN;
 
 // Hash function for PII data
@@ -143,35 +142,89 @@ export async function POST(request: NextRequest) {
       test_event_code: testEventCode || undefined,
     };
 
-    // Send to Facebook Conversions API
-    const facebookUrl = `https://graph.facebook.com/${FACEBOOK_API_VERSION}/${PIXEL_ID}/events`;
-    
-    const response = await fetch(facebookUrl, {
+    // Build Facebook API URL
+    const url = `https://graph.facebook.com/v21.0/${process.env.FACEBOOK_PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`;
+
+    // Send to Facebook
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${ACCESS_TOKEN}`,
       },
       body: JSON.stringify(payload),
     });
 
     const result = await response.json();
 
-    if (!response.ok) {
-      console.error('Facebook API Error:', result);
+    if (response.ok) {
+      // Log successful events (production-safe)
+      const logData = {
+        eventId,
+        eventName,
+        timestamp: new Date().toISOString(),
+        host: request.headers.get('host') || '',
+        userAgent: request.headers.get('user-agent')?.substring(0, 50) + '...',
+        hasEmail: !!email,
+        hasPhone: !!phone,
+        value: customData.value,
+        currency: customData.currency
+      };
+      
+      console.log(`✅ Facebook ${eventName} event sent successfully:`, logData);
+      
+      // Add to monitoring
+      logEventForMonitoring({
+        platform: 'Facebook',
+        eventName,
+        eventId,
+        success: true,
+        host: logData.host,
+        userAgent: logData.userAgent,
+        hasEmail: !!email,
+        hasPhone: !!phone,
+        value: customData.value,
+        currency: customData.currency
+      });
+
+      return NextResponse.json({ 
+        success: true, 
+        eventId,
+        message: `${eventName} event tracked successfully`
+      });
+    } else {
+      const errorData = {
+        status: response.status,
+        error: result,
+        eventId,
+        timestamp: new Date().toISOString()
+      };
+      
+      console.error(`❌ Facebook ${eventName} event failed:`, errorData);
+      
+      // Add to monitoring
+      logEventForMonitoring({
+        platform: 'Facebook',
+        eventName,
+        eventId,
+        success: false,
+        host: request.headers.get('host') || '',
+        userAgent: request.headers.get('user-agent')?.substring(0, 50) + '...',
+        hasEmail: !!email,
+        hasPhone: !!phone,
+        value: customData.value,
+        currency: customData.currency,
+        error: JSON.stringify(result)
+      });
+      
       return NextResponse.json(
-        { error: 'Failed to send event to Facebook', details: result },
+        { 
+          success: false, 
+          error: 'Failed to track event',
+          details: result 
+        },
         { status: response.status }
       );
     }
-
-
-
-    return NextResponse.json({
-      success: true,
-      eventId,
-      facebookResponse: result,
-    });
 
   } catch (error) {
     console.error('Error sending Facebook conversion event:', error);

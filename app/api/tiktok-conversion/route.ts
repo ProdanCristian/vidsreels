@@ -131,20 +131,43 @@ export async function POST(request: NextRequest) {
     const result = await tiktokResponse.json()
 
     if (tiktokResponse.ok) {
-
-
-      return NextResponse.json({
-        success: true,
+      // Log successful events (production-safe)
+      console.log(`✅ TikTok ${eventData.eventName} event sent successfully:`, {
         eventId,
-        result
-      })
-    } else {
+        eventName: eventData.eventName,
+        timestamp: new Date().toISOString(),
+        host: request.headers.get('host'),
+        userAgent: request.headers.get('user-agent')?.substring(0, 50) + '...',
+        hasEmail: !!eventData.email,
+        hasPhone: !!eventData.phone,
+        value: properties.value,
+        currency: properties.currency
+      });
 
       return NextResponse.json({ 
-        error: 'Failed to send TikTok event', 
-        details: result,
-        status: tiktokResponse.status 
-      }, { status: 400 })
+        success: true, 
+        eventId,
+        message: `TikTok ${eventData.eventName} event tracked successfully`,
+        result 
+      })
+    } else {
+      const errorResult = await tiktokResponse.json()
+      
+      console.error(`❌ TikTok ${eventData.eventName} event failed:`, {
+        status: tiktokResponse.status,
+        error: errorResult,
+        eventId,
+        timestamp: new Date().toISOString()
+      })
+      
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Failed to track TikTok event',
+          details: errorResult 
+        },
+        { status: tiktokResponse.status }
+      )
     }
 
   } catch (error) {
