@@ -37,6 +37,7 @@ export async function POST(request: NextRequest) {
     const rawAccessToken = process.env.TIKTOK_ACCESS_TOKEN
     const pixelId = process.env.TIKTOK_PIXEL_ID || 'D12M6FBC77U53580S2M0'
     const advertiserId = process.env.TIKTOK_ADVERTISER_ID
+    const testEventCode = process.env.TIKTOK_TEST_EVENT_CODE
     
     if (!rawAccessToken) {
       console.error('TikTok Access Token not configured')
@@ -109,7 +110,7 @@ export async function POST(request: NextRequest) {
 
 
     // Send to TikTok Events API with official format
-    const requestBody = {
+    const requestBody: Record<string, unknown> = {
       event_source: "web",
       event_source_id: pixelId,
       data: [{
@@ -122,6 +123,12 @@ export async function POST(request: NextRequest) {
           referrer: ''
         }
       }]
+    }
+
+    // Add test event code if available (for development/testing)
+    if (testEventCode) {
+      requestBody.test_event_code = testEventCode
+      console.log('🧪 Using TikTok test event code for server-side tracking')
     }
 
 
@@ -148,7 +155,8 @@ export async function POST(request: NextRequest) {
         hasEmail: !!eventData.email,
         hasPhone: !!eventData.phone,
         value: properties.value,
-        currency: properties.currency
+        currency: properties.currency,
+        hasTestEventCode: !!testEventCode
       };
       
       console.log(`✅ TikTok ${eventData.eventName} event sent successfully:`, logData);

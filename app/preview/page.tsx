@@ -59,7 +59,7 @@ export default function PreviewPage() {
               contents: [
                 {
                   content_id: 'preview_page',
-                  content_type: 'page',
+                  content_type: 'product',
                   content_name: 'Preview Page Visited'
                 }
               ]
@@ -92,7 +92,7 @@ export default function PreviewPage() {
           contents: [
             {
               content_id: `video_${index + 1}`,
-              content_type: 'video',
+              content_type: 'product',
               content_name: `Video ${index + 1} Played`
             }
           ]
@@ -139,7 +139,7 @@ export default function PreviewPage() {
           contents: [
             {
               content_id: 'back_to_home',
-              content_type: 'navigation',
+              content_type: 'product',
               content_name: 'Back to Home from Preview'
             }
           ]
