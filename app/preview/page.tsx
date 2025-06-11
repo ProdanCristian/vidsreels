@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { trackInitiateCheckout, trackFacebookButtonClickClient } from '@/lib/facebook-tracking'
 import { trackTikTokButtonClickClient, trackTikTokInitiateCheckout } from '@/lib/tiktok-tracking'
 import { redirectToCheckout } from '@/lib/checkout'
+import { generateEventId } from '@/lib/hash-utils'
 
 // Extend window interface for direct pixel calls
 declare global {
@@ -63,6 +64,8 @@ export default function PreviewPage() {
                   content_name: 'Preview Page Visited'
                 }
               ]
+            }, {
+              event_id: generateEventId() // Add event_id for deduplication
             })
           }
         } catch (error) {
@@ -96,6 +99,8 @@ export default function PreviewPage() {
               content_name: `Video ${index + 1} Played`
             }
           ]
+        }, {
+          event_id: generateEventId() // Add event_id for deduplication
         })
       }
     } catch (error) {
@@ -143,6 +148,8 @@ export default function PreviewPage() {
               content_name: 'Back to Home from Preview'
             }
           ]
+        }, {
+          event_id: generateEventId() // Add event_id for deduplication
         })
       }
     } catch (error) {

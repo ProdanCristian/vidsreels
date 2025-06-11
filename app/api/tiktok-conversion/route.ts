@@ -114,8 +114,9 @@ export async function POST(request: NextRequest) {
       event_source: "web",
       event_source_id: pixelId,
       data: [{
-        event: eventData.eventName,
+        event: eventData.eventName === 'Purchase' ? 'CompletePayment' : eventData.eventName,
         event_time: eventTime,
+        event_id: eventId,
         user: userData,
         properties: properties,
         page: {

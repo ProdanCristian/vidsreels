@@ -105,7 +105,7 @@ export default function SuccessPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          eventName: 'Purchase',
+          eventName: 'CompletePayment', // Changed from 'Purchase' to 'CompletePayment' for TikTok compliance
           email: customerEmail,
           phone: customerPhone,
           firstName: customerName?.split(' ')[0],

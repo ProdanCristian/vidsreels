@@ -84,7 +84,7 @@ export function trackTikTokPurchase(
   value: number = 29.00
 ) {
   return trackTikTokEvent({
-    eventName: 'Purchase',
+    eventName: 'CompletePayment',
     email,
     phone,
     firstName,
