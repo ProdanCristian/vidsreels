@@ -2,10 +2,9 @@
 
 import React from 'react'
 import Image from 'next/image'
-import { FaTiktok, FaInstagram, FaYoutube, FaEye, FaFire } from 'react-icons/fa'
+import { FaTiktok, FaInstagram, FaYoutube, FaFire } from 'react-icons/fa'
 import { HiCheckCircle } from 'react-icons/hi'
 import { AiFillStar } from 'react-icons/ai'
-import { useRouter } from 'next/navigation'
 import { trackFacebookButtonClickClient } from '@/lib/facebook-tracking'
 import { trackTikTokButtonClickClient } from '@/lib/tiktok-tracking'
 
@@ -14,16 +13,6 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ onGetBundle }) => {
-  const router = useRouter()
-
-  const handlePreviewClick = () => {
-    // Track client-side button click for both platforms
-    trackFacebookButtonClickClient('Hero Section', 'Preview reels')
-    trackTikTokButtonClickClient('Hero Section', 'Preview reels')
-    
-    // Navigate to preview page
-    router.push('/preview')
-  }
 
   const handleGetBundleClick = () => {
     // Track client-side button click for both platforms
@@ -157,9 +146,6 @@ const Hero: React.FC<HeroProps> = ({ onGetBundle }) => {
             className="cursor-pointer w-full sm:w-auto px-10 sm:px-12 py-5 sm:py-6 bg-gradient-to-r from-yellow-400 to-orange-400 text-black rounded-full font-bold text-xl sm:text-2xl hover:from-yellow-500 hover:to-orange-500 transition-all duration-300 animate-pulse-cta shadow-lg hover:shadow-xl border-4 border-yellow-400/40 hover:border-orange-400/60"
           >
             <FaFire className="inline w-5 h-5 mr-2" /> Get Instant Access – Only $29 (One-Time)
-          </button>
-          <button onClick={handlePreviewClick} className="cursor-pointer w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-secondary border border-border rounded-full font-semibold text-base sm:text-lg hover:bg-secondary/80 transition-all duration-300 hover:scale-105">
-            <FaEye className="inline w-4 h-4 mr-2" /> Preview Reels
           </button>
         </nav>
         
