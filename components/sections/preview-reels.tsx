@@ -88,8 +88,8 @@ const PreviewReels = () => {
                       </svg>
                     </div>
                   )}
-                  {/* Play Overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 group-hover:bg-black/60">
+                  {/* Play Overlay - always visible */}
+                  <div className="absolute inset-0 flex items-center justify-center transition-opacity bg-black/40 group-hover:bg-black/60">
                     <svg className="w-14 h-14 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M8 5v14l11-7z" />
                     </svg>
@@ -103,13 +103,12 @@ const PreviewReels = () => {
       {/* Modal for video playback */}
       {modalIdx !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm" onClick={() => setModalIdx(null)}>
-          <div className="relative w-[90vw] max-w-[420px] aspect-[9/16] max-h-[90vh] flex items-center justify-center bg-black rounded-2xl overflow-hidden shadow-2xl border-4 border-yellow-300" onClick={e => e.stopPropagation()}>
+          <div className="relative w-[90vw] max-w-[420px] aspect-[9/16] max-h-[90vh] flex items-center justify-center bg-black rounded-2xl overflow-hidden shadow-2xl border border-[#1e293b]" onClick={e => e.stopPropagation()}>
             <video
               src={previewVideos[modalIdx]}
               className="w-full h-full object-contain bg-black rounded-2xl"
               autoPlay
               controls
-              muted
               playsInline
               style={{ maxHeight: '90vh', background: 'black', borderRadius: '1rem' }}
             />
