@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import Image from 'next/image'
+import { trackTikTokButtonClickClient } from '@/lib/tiktok-tracking'
 
 const ResultsSection = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
@@ -29,8 +30,9 @@ const ResultsSection = () => {
     }
   ]
 
-  const openModal = (imageUrl: string) => {
+  const openModal = (imageUrl: string, resultId: number) => {
     setSelectedImage(imageUrl)
+    trackTikTokButtonClickClient('Results Section', `View Result ${resultId}`)
   }
 
   const closeModal = () => {
@@ -69,7 +71,7 @@ const ResultsSection = () => {
                   <div
                     key={`${result.id}-${index}`}
                     className="inline-block relative bg-card border border-border rounded-2xl overflow-hidden shadow-xl cursor-pointer w-48 sm:w-52 md:w-56 lg:w-64"
-                    onClick={() => openModal(result.url)}
+                    onClick={() => openModal(result.url, result.id)}
                   >
                     <div className="relative">
                       <Image 

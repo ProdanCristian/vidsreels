@@ -192,7 +192,10 @@ const Hero: React.FC<HeroProps> = ({ onGetBundle }) => {
             <div className="overflow-x-hidden">
               <div className="flex gap-4 animate-marquee-right w-max">
                 {[...items.slice(0, 14), ...items.slice(0, 14)].map((src, i) => (
-                  <div key={`row1-${src}-${i}`} className="inline-block relative w-44 h-80 sm:w-48 sm:h-88 md:w-52 md:h-96 lg:w-56 lg:h-[400px] rounded-2xl overflow-hidden shadow-xl border border-white/10 bg-black cursor-pointer" onClick={() => setModalIdx(i % 14)}>
+                  <div key={`row1-${src}-${i}`} className="inline-block relative w-44 h-80 sm:w-48 sm:h-88 md:w-52 md:h-96 lg:w-56 lg:h-[400px] rounded-2xl overflow-hidden shadow-xl border border-white/10 bg-black cursor-pointer" onClick={() => {
+                    setModalIdx(i % 14)
+                    trackTikTokButtonClickClient('Hero Video Marquee Row 1', `Preview Video ${(i % 14) + 1}`)
+                  }}>
                     {!imgError[i] ? (
                       <Image
                         src={src}
@@ -226,7 +229,10 @@ const Hero: React.FC<HeroProps> = ({ onGetBundle }) => {
             <div className="overflow-x-hidden">
               <div className="flex gap-4 animate-marquee-left w-max">
                 {[...items.slice(14, 27), ...items.slice(14, 27)].map((src, i) => (
-                  <div key={`row2-${src}-${i}`} className="inline-block relative w-44 h-80 sm:w-48 sm:h-88 md:w-52 md:h-96 lg:w-56 lg:h-[400px] rounded-2xl overflow-hidden shadow-xl border border-white/10 bg-black cursor-pointer" onClick={() => setModalIdx((i % 13) + 14)}>
+                  <div key={`row2-${src}-${i}`} className="inline-block relative w-44 h-80 sm:w-48 sm:h-88 md:w-52 md:h-96 lg:w-56 lg:h-[400px] rounded-2xl overflow-hidden shadow-xl border border-white/10 bg-black cursor-pointer" onClick={() => {
+                    setModalIdx((i % 13) + 14)
+                    trackTikTokButtonClickClient('Hero Video Marquee Row 2', `Preview Video ${(i % 13) + 15}`)
+                  }}>
                     {!imgError[i + 14] ? (
                       <Image
                         src={src}
