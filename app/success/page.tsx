@@ -3,6 +3,13 @@
 import React, { useEffect, useState } from 'react'
 import { CheckCircle, Download, Play, Palette, Film, Mail, MailCheck } from 'lucide-react'
 
+// Declare gtag function for TypeScript
+declare global {
+  interface Window {
+    gtag: (command: string, targetId: string, config?: Record<string, unknown>) => void
+  }
+}
+
 
 export default function SuccessPage() {
   const [sessionId, setSessionId] = useState<string | null>(null)
@@ -23,6 +30,7 @@ export default function SuccessPage() {
         sendDownloadEmail(id)
         trackFacebookPurchase(id)  // Facebook server-side
         trackTikTokPurchase(id)  // TikTok server-side
+        trackGoogleAdsPurchase(id)  // Google Ads conversion
       }
     }
     
@@ -196,6 +204,27 @@ export default function SuccessPage() {
       }
     } catch (error) {
       console.error('Error tracking Facebook Purchase event:', error)
+    }
+  }
+
+  const trackGoogleAdsPurchase = async (sessionId: string) => {
+    try {
+      // Check if gtag is available
+      if (typeof window !== 'undefined' && window.gtag) {
+        // Track Google Ads conversion with dynamic transaction data
+        window.gtag('event', 'conversion', {
+          'send_to': 'AW-17208982885/7tjMCJGpytsaEOX68I1A',
+          'value': 29.00,
+          'currency': 'USD',
+          'transaction_id': sessionId
+        })
+        
+        console.log('Google Ads Purchase conversion tracked successfully:', sessionId)
+      } else {
+        console.error('Google Analytics gtag not available')
+      }
+    } catch (error) {
+      console.error('Error tracking Google Ads Purchase conversion:', error)
     }
   }
 
