@@ -43,7 +43,7 @@ const ResultsSection = () => {
         {/* Heading */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-            <span className="gradient-text">Results Speak for Themselves</span>
+            <span className="gradient-text">Make Millions of Views Like Others</span>
           </h2>
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Real creators, real results. See how our viral reels are generating millions of views 

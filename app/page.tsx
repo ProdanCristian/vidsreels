@@ -19,7 +19,7 @@ import { useSimpleScrollTrigger } from '@/hooks/useSimpleScrollTrigger'
 import { redirectToCheckout } from '@/lib/checkout'
 import { trackInitiateCheckout, trackFacebookViewContentClient } from '@/lib/facebook-tracking'
 import { trackTikTokInitiateCheckout, trackTikTokViewContentClient } from '@/lib/tiktok-tracking'
-import PreviewReels from '@/components/sections/preview-reels'
+
 
 const Page = () => {
   const { elementRef, isVisible } = useScrollTrigger({ threshold: 0.1, rootMargin: '0px 0px -200px 0px' })
@@ -57,14 +57,13 @@ const Page = () => {
   return (
     <div className="bg-background min-h-screen">
       <Hero onGetBundle={() => handleGetBundle()} />
+      <Prof />
       <Niches />
-      <PreviewReels />
       <Editing />
       <HowItWorks />
       <div ref={elementRef}>
         <BonusReveal />
       </div>
-      <Prof />
       <Benefits />
       <Testimonials />
       <ValueStack />
