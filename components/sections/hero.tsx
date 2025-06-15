@@ -139,8 +139,8 @@ const Hero: React.FC<HeroProps> = ({ onGetBundle }) => {
 
   const handleGetBundleClick = () => {
     // Track client-side button click for both platforms
-    trackFacebookButtonClickClient('Hero Section', 'Get 15,000 Reels – $29 (was $199)')
-    trackTikTokButtonClickClient('Hero Section', 'Get 15,000 Reels – $29 (was $199)')
+    trackFacebookButtonClickClient('Hero Section', 'Get 15,000 Reels – $29 (was $287)')
+    trackTikTokButtonClickClient('Hero Section', 'Get 15,000 Reels – $29 (was $287)')
     
     // Trigger checkout (server-side tracking handled in parent component)
     if (onGetBundle) {
@@ -264,13 +264,13 @@ const Hero: React.FC<HeroProps> = ({ onGetBundle }) => {
           {/* Description */}
           <p className="text-lg sm:text-xl md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed animate-fade-in-up [animation-delay:0.5s]">
             Get instant access to 15,000 premium 4K viral reels that are proven to get millions of views — 
-            <span className="font-semibold text-foreground"> normally $199, now just $29 (85% OFF!)</span>
+            <span className="font-semibold text-foreground"> normally $287, now just $29 (90% OFF!)</span>
           </p>
 
           {/* Badges */}
           <div className="flex flex-col sm:flex-row justify-center items-center gap-3 animate-fade-in-up [animation-delay:0.6s]">
             <span className="inline-flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 border border-yellow-400/30 rounded-full text-sm font-semibold text-yellow-700">
-              <FaFire className="w-4 h-4 text-orange-500" /> Limited Time: 85% OFF
+              <FaFire className="w-4 h-4 text-orange-500" /> Limited Time: 90% OFF
             </span>
             <span className="inline-flex items-center gap-2 px-5 py-2 bg-green-100 border border-green-300 rounded-full text-sm font-semibold text-green-700">
               <HiCheckCircle className="w-4 h-4 text-green-500" /> 30-Day Money-Back Guarantee
@@ -283,7 +283,14 @@ const Hero: React.FC<HeroProps> = ({ onGetBundle }) => {
               onClick={handleGetBundleClick}
               className="cursor-pointer px-10 py-5 bg-gradient-to-r from-yellow-400 to-orange-400 text-black rounded-full font-bold text-xl hover:from-yellow-500 hover:to-orange-500 transition-all duration-300 shadow-2xl hover:shadow-3xl border-4 border-yellow-400/40 hover:border-orange-400/60 hover:scale-105"
             >
-              <FaFire className="inline w-5 h-5 mr-2" /> Get Instant Access – Only $29
+              <div className="flex items-center justify-center gap-3">
+                <FaFire className="w-5 h-5" />
+                <span>Get Access – $29</span>
+                <div className="flex flex-col items-center">
+                  <span className="text-xs text-black/60 leading-none">was</span>
+                  <span className="line-through text-sm text-black/70 leading-none">$287</span>
+                </div>
+              </div>
             </button>
           </div>
 
