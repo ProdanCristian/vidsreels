@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { FaShieldAlt, FaCheckCircle, FaClock, FaHeart } from 'react-icons/fa'
+import { FaShieldAlt, FaCheckCircle, FaClock, FaHeart, FaFire, FaDownload } from 'react-icons/fa'
 import { trackFacebookButtonClickClient } from '@/lib/facebook-tracking'
 import { trackTikTokButtonClickClient } from '@/lib/tiktok-tracking'
 
@@ -12,8 +12,8 @@ interface GuaranteeProps {
 const Guarantee: React.FC<GuaranteeProps> = ({ onGetBundle }) => {
   const handleGetBundleClick = () => {
     // Track client-side button click for both platforms
-    trackFacebookButtonClickClient('Guarantee Section', 'Get Your Risk-Free Bundle – $29')
-    trackTikTokButtonClickClient('Guarantee Section', 'Get Your Risk-Free Bundle – $29')
+    trackFacebookButtonClickClient('Guarantee Section', 'Get Your Risk-Free Bundle – $14.99')
+    trackTikTokButtonClickClient('Guarantee Section', 'Get Your Risk-Free Bundle – $14.99')
     
     // Trigger checkout (server-side tracking handled in parent component)
     if (onGetBundle) {
@@ -88,11 +88,13 @@ const Guarantee: React.FC<GuaranteeProps> = ({ onGetBundle }) => {
             </div>
 
             {/* CTA Button */}
-            <button 
+            <button
               onClick={handleGetBundleClick}
-              className="px-10 md:px-12 py-5 md:py-6 bg-gradient-to-r from-yellow-400 to-orange-400 text-black rounded-full font-bold text-xl md:text-2xl hover:from-yellow-500 hover:to-orange-500 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="cursor-pointer px-12 md:px-16 py-6 md:py-8 bg-gradient-to-r from-yellow-400 to-orange-400 text-black rounded-full font-bold text-xl md:text-2xl hover:from-yellow-500 hover:to-orange-500 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105 animate-pulse-cta"
             >
-              Get Your Risk-Free Bundle – <span className="line-through">$287</span> $29
+              <FaFire className="inline w-6 h-6 mr-3" />
+              Get Your Risk-Free Bundle – <span className="line-through">$69.99</span> $14.99
+              <FaDownload className="inline w-5 h-5 ml-3" />
             </button>
 
             {/* Security Badge */}

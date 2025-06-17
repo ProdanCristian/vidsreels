@@ -437,7 +437,7 @@ export async function POST(request: NextRequest) {
               </div>
               <div class="order-detail">
                 <span><strong>Total Paid:</strong></span>
-                <span class="value">$29.00</span>
+                <span class="value">$14.99</span>
               </div>
               <div class="order-detail">
                 <span><strong>You Saved:</strong></span>

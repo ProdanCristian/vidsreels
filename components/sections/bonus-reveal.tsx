@@ -13,16 +13,18 @@ import MinimalistAnimations from './minimalist'
 const BonusReveal = () => {
   // Define all bonus items for the value stack
   const bonusItems = [
-    { name: '15,000 4K Viral Reels', description: 'Premium luxury lifestyle content', value: 199, isMain: true },
-    { name: '1,000+ Minimalist Visuals', description: 'Smooth animations and modern designs', value: 49 },
-    { name: '70+ Cinematic LUTs', description: 'Professional color grading presets', value: 39 },
+    { name: '15,000 4K Viral Reels', description: 'Premium luxury lifestyle content', value: 69.99, isMain: true },
+    { name: 'FREE: 1,000+ Minimalist Visuals', description: 'Smooth animations and modern designs', value: 'FREE' },
+    { name: 'FREE: 70+ Cinematic LUTs', description: 'Professional color grading presets', value: 'FREE' },
     // Add more bonus items here as you create them
     // { name: 'Bonus 3 Name', description: 'Description', value: 29 },
     // { name: 'Bonus 4 Name', description: 'Description', value: 19 },
   ]
 
-  const totalValue = bonusItems.reduce((sum, item) => sum + item.value, 0)
-  const finalPrice = 29
+  const totalValue = bonusItems.reduce((sum, item) => {
+    return typeof item.value === 'number' ? sum + item.value : sum
+  }, 0)
+  const finalPrice = 14.99
   const discountPercentage = Math.round(((totalValue - finalPrice) / totalValue) * 100)
 
   return (
@@ -103,7 +105,7 @@ const BonusReveal = () => {
                 </div>
                 <div className="text-right ml-4">
                   <div className={`text-xl font-bold ${item.isMain ? 'text-yellow-400' : 'text-green-400'}`}>
-                    ${item.value}
+                    {item.value}
                   </div>
                   <div className="text-xs text-muted-foreground">Value</div>
                 </div>

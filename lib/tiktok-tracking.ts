@@ -74,26 +74,22 @@ export function trackTikTokInitiateCheckout(value?: number, contentName?: string
   });
 }
 
-// Track purchase completion (server-side)
+// Track purchase completion
 export function trackTikTokPurchase(
   email?: string, 
   phone?: string,
-  firstName?: string,
-  lastName?: string,
   orderId?: string,
-  value: number = 29.00
+  value: number = 14.99
 ) {
   return trackTikTokEvent({
     eventName: 'CompletePayment',
     email,
     phone,
-    firstName,
-    lastName,
     currency: 'USD',
     value,
-    contentName: '15,000 Viral Reels Bundle - Purchase Completed',
     contentType: 'product',
-    contentId: orderId || 'viral-reels-bundle',
+    contentId: 'viral-reels-bundle',
+    contentName: 'VidsReels Bundle Purchase',
   });
 }
 

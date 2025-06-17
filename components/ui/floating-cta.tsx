@@ -44,7 +44,7 @@ export function FloatingCTA() {
             <div className="flex items-center justify-between mb-3">
               <div className="text-white">
                 <p className="font-bold text-lg">🔥 Limited Time!</p>
-                <p className="text-red-100 text-sm">15,000 Reels for $29</p>
+                <p className="text-red-100 text-sm">15,000 Reels for $14.99</p>
               </div>
               <button
                 onClick={handleDismiss}

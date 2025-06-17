@@ -20,7 +20,7 @@ const testimonials = [
     stats: "30m+ views • $100k earned"
   },
   {
-    quote: "Finally found viral content that actually works! The yacht and vacation reels got me noticed by major brands. Best $29 I ever spent.",
+    quote: "Finally found viral content that actually works! The yacht and vacation reels got me noticed by major brands. Best $14.99 I ever spent.",
     author: "@the.10.millionaire/",
     avatar: "/avatars/the10millionaire.jpg",
     verified: true,

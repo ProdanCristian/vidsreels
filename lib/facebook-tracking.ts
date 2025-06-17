@@ -138,7 +138,7 @@ export function trackPurchase(
     state,
     postalCode,
     currency: 'USD',
-    value: 29.00,
+    value: 14.99,
     orderId,
   });
 } 

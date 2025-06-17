@@ -277,14 +277,14 @@ export default function PreviewPage() {
             {/* Pricing */}
             <div className="mb-6">
               <div className="flex items-center justify-center gap-4 mb-4">
-                <span className="text-2xl text-muted-foreground line-through">$199</span>
-                <span className="text-4xl font-bold text-green-600">$29</span>
+                <span className="text-2xl text-muted-foreground line-through">$69.99</span>
+                <span className="text-4xl font-bold text-green-600">$14.99</span>
                 <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                  85% OFF
+                  78% OFF
                 </span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Limited time offer - normally $199
+                Limited time offer - normally $69.99
               </p>
             </div>
 
@@ -294,7 +294,7 @@ export default function PreviewPage() {
               className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-400 text-black rounded-full font-bold text-xl hover:from-yellow-500 hover:to-orange-500 transition-all duration-300 animate-pulse-cta shadow-lg hover:shadow-xl hover:scale-105"
             >
               <FaFire className="inline w-5 h-5 mr-2" />
-              Get Full Bundle Now - $29
+              Get Full Bundle Now - $14.99
             </button>
 
             {/* Trust Indicators */}

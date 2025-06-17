@@ -1,7 +1,7 @@
 {
   "name": "VidsReels - 15,000 Viral Reels Bundle",
   "short_name": "VidsReels",
-  "description": "Get 15,000 viral luxury lifestyle reels for just $29. Proven content for TikTok, Instagram Reels & YouTube Shorts.",
+  "description": "Get 15,000 viral luxury lifestyle reels for just $14.99. Proven content for TikTok, Instagram Reels & YouTube Shorts.",
   "icons": [
     {
       "src": "/icons/android-chrome-192x192.png",
@@ -14,8 +14,8 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#000000",
-  "background_color": "#000000",
+  "theme_color": "#f59e0b",
+  "background_color": "#ffffff",
   "display": "standalone",
   "start_url": "/",
   "scope": "/"

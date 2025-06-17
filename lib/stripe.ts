@@ -9,8 +9,8 @@ export const stripePromise = loadStripe(
 export const STRIPE_CONFIG = {
   // Product configuration
   BUNDLE_PRICE_ID: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID!,
-  BUNDLE_PRICE: 29, // $29
-  ORIGINAL_PRICE: 287, // $287
+  BUNDLE_PRICE: 14.99, // $14.99
+  ORIGINAL_PRICE: 69.99, // $69.99
   CURRENCY: 'usd',
   
   // Product details

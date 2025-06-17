@@ -44,7 +44,7 @@ const Urgency = () => {
 
           {/* CTA Button */}
           <button className="px-10 md:px-12 py-5 md:py-6 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-full font-bold text-xl md:text-2xl hover:from-red-600 hover:to-orange-600 transition-all duration-300 shadow-2xl hover:shadow-3xl animate-pulse-cta transform hover:scale-105">
-            Get the Bundle Now – $29
+            Get the Bundle Now – $14.99
           </button>
 
           {/* Urgency Points */}

@@ -11,8 +11,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "15,000 Viral Reels Bundle - VidsReels",
-  description: "Get 15,000 viral luxury lifestyle reels for just $29. Proven content for TikTok, Instagram Reels & YouTube Shorts. Commercial license included.",
+  title: "VidsReels - 15,000 Viral Reels Bundle | Content Creator Pack",
+  description: "Get 15,000 viral luxury lifestyle reels for just $14.99. Proven content for TikTok, Instagram Reels & YouTube Shorts. Commercial license included.",
+  keywords: "viral reels, TikTok content, Instagram reels, YouTube shorts, luxury lifestyle, content creator, viral videos, social media content",
+  authors: [{ name: "VidsReels" }],
   icons: {
     icon: [
       { url: '/icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },

@@ -43,10 +43,10 @@ const FinalCTA = () => {
           <div className="mb-8">
             <div className="inline-block bg-gradient-to-r from-red-500/10 to-pink-500/10 border border-red-500/20 rounded-2xl p-6">
               <div className="flex items-center justify-center gap-4">
-                            <span className="text-2xl md:text-3xl font-bold text-red-400 line-through">$287</span>
-            <span className="text-4xl md:text-5xl font-bold text-green-400">$29</span>
+                            <span className="text-2xl md:text-3xl font-bold text-red-400 line-through">$69.99</span>
+            <span className="text-4xl md:text-5xl font-bold text-green-400">$14.99</span>
               </div>
-                              <p className="text-sm text-muted-foreground mt-2">Save 90% Today Only</p>
+                              <p className="text-sm text-muted-foreground mt-2">Save 78% Today Only</p>
             </div>
           </div>
 
@@ -54,7 +54,7 @@ const FinalCTA = () => {
           <div className="mb-8">
             <button className="group relative px-12 md:px-16 py-6 md:py-8 bg-gradient-to-r from-yellow-400 to-orange-400 text-black rounded-full font-bold text-xl md:text-2xl hover:from-yellow-500 hover:to-orange-500 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105 animate-pulse-cta">
               <FaFire className="inline w-6 h-6 mr-3" />
-              Download All 15,000 Reels – $29
+              Download All 15,000 Reels – $14.99
               <FaDownload className="inline w-5 h-5 ml-3" />
             </button>
           </div>

@@ -119,7 +119,7 @@ export default function SuccessPage() {
           firstName: customerName?.split(' ')[0],
           lastName: customerName?.split(' ').slice(1).join(' '),
           currency: 'USD',
-          value: 29.00,
+          value: 14.99,
           contentId: sessionId,
           contentName: '15,000 Viral Reels Bundle - Purchase Completed',
           contentType: 'product',
@@ -187,7 +187,7 @@ export default function SuccessPage() {
           state: state,
           postalCode: postalCode,
           currency: 'USD',
-          value: 29.00,
+          value: 14.99,
           orderId: sessionId,
           contentName: '15,000 Viral Reels Bundle - Purchase Completed',
           contentCategory: 'Digital Product Purchase',
@@ -214,7 +214,7 @@ export default function SuccessPage() {
         // Track Google Ads conversion with dynamic transaction data
         window.gtag('event', 'conversion', {
           'send_to': 'AW-17208982885/7tjMCJGpytsaEOX68I1A',
-          'value': 29.00,
+          'value': 14.99,
           'currency': 'USD',
           'transaction_id': sessionId
         })
@@ -299,11 +299,11 @@ export default function SuccessPage() {
           <div className="bg-card border border-border rounded-2xl p-8 mb-12">
             <div className="flex justify-between items-center mb-6">
               <span className="text-lg text-muted-foreground">Total Paid:</span>
-              <span className="text-3xl font-bold text-green-600">$29.00</span>
+              <span className="text-3xl font-bold text-green-600">$14.99</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-lg text-muted-foreground">You Saved:</span>
-              <span className="text-2xl font-bold text-red-500">$258.00 (90% OFF)</span>
+              <span className="text-2xl font-bold text-red-500">$55.00 (78% OFF)</span>
             </div>
           </div>
 

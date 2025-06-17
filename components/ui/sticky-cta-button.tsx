@@ -56,10 +56,10 @@ const StickyCTAButton: React.FC<StickyCTAButtonProps> = ({ isVisible, onGetBundl
         {/* Price Section */}
         <div className="text-center mb-2">
           <div className="flex items-center justify-center gap-2">
-            <span className="text-sm text-muted-foreground line-through">$287</span>
-            <span className="text-lg font-bold text-green-500">$29</span>
+            <span className="text-sm text-muted-foreground line-through">$69.99</span>
+            <span className="text-lg font-bold text-green-500">$14.99</span>
           </div>
-          <div className="text-xs text-muted-foreground">90% OFF - Limited Time</div>
+          <div className="text-xs text-muted-foreground">78% OFF - Limited Time</div>
         </div>
 
         {/* Timer Section */}
