@@ -457,7 +457,7 @@ export async function POST(request: NextRequest) {
                     <div class="download-title">15,000 Viral Reels</div>
                     <div class="download-desc">Premium 4K luxury lifestyle content</div>
                   </div>
-                  <a href="https://drive.google.com/drive/folders/1LO6IysSwEJwHVc0SR5vZGEpKXk7gciOf?usp=drive_link" class="download-btn">
+                  <a href="https://drive.google.com/drive/folders/1LO6IysSwEJwHVc0SR5vZGEpKXk7gciOf?usp=sharing" class="download-btn">
                     📥 Download Reels
                   </a>
                 </div>
@@ -469,7 +469,7 @@ export async function POST(request: NextRequest) {
                     <div class="download-title">1,000 Minimal Animations</div>
                     <div class="download-desc">Minimal motion graphics & transitions</div>
                   </div>
-                  <a href="https://drive.google.com/drive/folders/1SeJARnmLEVDmwTdarGWKsXS8zRVE6Uzq?usp=drive_link" class="download-btn purple">
+                  <a href="https://drive.google.com/drive/folders/1SeJARnmLEVDmwTdarGWKsXS8zRVE6Uzq?usp=sharing" class="download-btn purple">
                     📥 Download Animations
                   </a>
                 </div>
@@ -481,7 +481,7 @@ export async function POST(request: NextRequest) {
                     <div class="download-title">70 Premium LUTs</div>
                     <div class="download-desc">Professional color grading presets</div>
                   </div>
-                  <a href="https://drive.google.com/drive/folders/16VYaDmUhYHLeyX2nLCxRMWCs6LCm3ZCQ?usp=drive_link" class="download-btn orange">
+                  <a href="https://drive.google.com/drive/folders/16VYaDmUhYHLeyX2nLCxRMWCs6LCm3ZCQ?usp=sharing" class="download-btn orange">
                     📥 Download LUTs
                   </a>
                 </div>

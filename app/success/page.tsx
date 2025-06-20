@@ -318,7 +318,7 @@ export default function SuccessPage() {
                   <h3 className="text-xl font-bold text-foreground mb-2">15,000 Viral Reels</h3>
                   <p className="text-sm text-muted-foreground mb-4">Premium 4K luxury lifestyle content</p>
                 </div>
-                <button onClick={() => window.open('https://drive.google.com/drive/folders/1LO6IysSwEJwHVc0SR5vZGEpKXk7gciOf?usp=drive_link', '_blank')} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105">
+                <button onClick={() => window.open('https://drive.google.com/drive/folders/1LO6IysSwEJwHVc0SR5vZGEpKXk7gciOf?usp=sharing', '_blank')} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105">
                   <Download className="w-5 h-5 inline mr-2" />
                   Download Reels
                 </button>
@@ -331,7 +331,7 @@ export default function SuccessPage() {
                   <h3 className="text-xl font-bold text-foreground mb-2">1,000 Animations</h3>
                   <p className="text-sm text-muted-foreground mb-4">Minimal motion graphics & transitions</p>
                 </div>
-                <button onClick={() => window.open('https://drive.google.com/drive/folders/1SeJARnmLEVDmwTdarGWKsXS8zRVE6Uzq?usp=drive_link', '_blank')} className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105">
+                <button onClick={() => window.open('https://drive.google.com/drive/folders/1SeJARnmLEVDmwTdarGWKsXS8zRVE6Uzq?usp=sharing', '_blank')} className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105">
                   <Download className="w-5 h-5 inline mr-2" />
                   Download Animations
                 </button>
@@ -344,7 +344,7 @@ export default function SuccessPage() {
                   <h3 className="text-xl font-bold text-foreground mb-2">70 Premium LUTs</h3>
                   <p className="text-sm text-muted-foreground mb-4">Professional color grading presets</p>
                 </div>
-                <button onClick={() => window.open('https://drive.google.com/drive/folders/16VYaDmUhYHLeyX2nLCxRMWCs6LCm3ZCQ?usp=drive_link', '_blank')} className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105">
+                <button onClick={() => window.open('https://drive.google.com/drive/folders/16VYaDmUhYHLeyX2nLCxRMWCs6LCm3ZCQ?usp=sharing', '_blank')} className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105">
                   <Download className="w-5 h-5 inline mr-2" />
                   Download LUTs
                 </button>
