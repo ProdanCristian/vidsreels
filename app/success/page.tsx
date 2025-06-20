@@ -41,39 +41,99 @@ export default function SuccessPage() {
     return true
   }
 
-  useEffect(() => {
-    // Get session ID from URL on client side
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search)
-      const id = urlParams.get('session_id')
-      setSessionId(id)
+  // Main function to verify Stripe payment success and trigger conversions
+  const verifyStripePaymentAndTrack = async (sessionId: string) => {
+    try {
+      console.log('🔍 Verifying Stripe payment for session:', sessionId.slice(-8))
       
-      // Send email and track conversions if we have a VALID session ID
-      if (id && isValidStripeSessionId(id)) {
-        // Check if we've already processed this session to prevent duplicates
-        if (processedSessions.has(id)) {
-          console.log('⚠️ Session already processed, skipping:', id.slice(-8))
-          return
-        }
+      // Get Stripe session details
+      const stripeResponse = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          action: 'get_session',
+          sessionId 
+        }),
+      })
 
-        // Mark session as processed
-        setProcessedSessions(prev => new Set(prev).add(id))
+      if (!stripeResponse.ok) {
+        console.error('❌ Failed to retrieve Stripe session:', stripeResponse.status)
+        return
+      }
+
+      const stripeData = await stripeResponse.json()
+      
+      // Validate payment success criteria
+      const isPaymentSuccessful = (
+        stripeData.payment_status === 'paid' &&
+        stripeData.status === 'complete' &&
+        stripeData.amount_total > 0
+      )
+
+      if (!isPaymentSuccessful) {
+        console.warn('⚠️ Stripe payment not successful, skipping all tracking:', {
+          payment_status: stripeData.payment_status,
+          status: stripeData.status,
+          amount_total: stripeData.amount_total
+        })
+        return
+      }
+
+      console.log('✅ Stripe payment verified successfully:', {
+        payment_status: stripeData.payment_status,
+        status: stripeData.status,
+        amount_total: stripeData.amount_total
+      })
+
+      // Send download email
+      sendDownloadEmail(sessionId)
+      
+      // Only track conversions in production or if explicitly enabled
+      if (shouldTrackConversions()) {
+        console.log('📊 Triggering conversion tracking for verified payment:', sessionId.slice(-8))
+        trackFacebookPurchase(sessionId)  // Facebook server-side
+        trackTikTokPurchase(sessionId)  // TikTok server-side
+        trackGoogleAdsPurchase(sessionId)  // Google Ads conversion
+      } else {
+        console.log('🧪 Test mode: Conversion tracking disabled for session:', sessionId.slice(-8))
+      }
+
+    } catch (error) {
+      console.error('❌ Error verifying Stripe payment:', error)
+    }
+  }
+
+  useEffect(() => {
+    const initializePaymentSuccess = async () => {
+      // Get session ID from URL on client side
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search)
+        const id = urlParams.get('session_id')
+        setSessionId(id)
         
-        sendDownloadEmail(id)
-        
-        // Only track conversions in production or if explicitly enabled
-        if (shouldTrackConversions()) {
-          console.log('📊 Tracking conversions for session:', id.slice(-8))
-          trackFacebookPurchase(id)  // Facebook server-side
-          trackTikTokPurchase(id)  // TikTok server-side
-          trackGoogleAdsPurchase(id)  // Google Ads conversion
-        } else {
-          console.log('🧪 Test mode: Conversion tracking disabled for session:', id.slice(-8))
+        // Send email and track conversions if we have a VALID session ID
+        if (id && isValidStripeSessionId(id)) {
+          // Check if we've already processed this session to prevent duplicates
+          if (processedSessions.has(id)) {
+            console.log('⚠️ Session already processed, skipping:', id.slice(-8))
+            return
+          }
+
+          // Mark session as processed
+          setProcessedSessions(prev => new Set(prev).add(id))
+          
+          // First, verify Stripe payment success before doing anything
+          await verifyStripePaymentAndTrack(id)
+          
+        } else if (id) {
+          console.warn('⚠️ Invalid session ID format detected:', id)
         }
-      } else if (id) {
-        console.warn('⚠️ Invalid session ID format detected:', id)
       }
     }
+
+    initializePaymentSuccess()
     
     // Shorter loading time for better UX
     const timer = setTimeout(() => {
@@ -200,13 +260,6 @@ export default function SuccessPage() {
       }
 
       const stripeData = await stripeResponse.json()
-      
-      // Validate that this is actually a completed purchase
-      if (stripeData.payment_status !== 'paid') {
-        console.warn('⚠️ Stripe session not paid, skipping Facebook tracking:', stripeData.payment_status)
-        return
-      }
-
       const customerEmail = stripeData.customer_details?.email
       const customerName = stripeData.customer_details?.name
       const customerPhone = stripeData.customer_details?.phone
