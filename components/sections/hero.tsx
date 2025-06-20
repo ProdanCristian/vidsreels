@@ -5,8 +5,9 @@ import Image from 'next/image'
 import { FaTiktok, FaInstagram, FaYoutube, FaFire, FaEye } from 'react-icons/fa'
 import { HiCheckCircle } from 'react-icons/hi'
 import { AiFillStar } from 'react-icons/ai'
-import { trackFacebookButtonClickClient } from '@/lib/facebook-tracking'
+
 import { trackTikTokButtonClickClient } from '@/lib/tiktok-tracking'
+import { trackViewContent } from '@/lib/facebook-tracking'
 
 const previewScreenshots = [
   '/previews/vidsreels_1.jpg',
@@ -71,6 +72,7 @@ const previewVideos = [
 
 interface HeroProps {
   onGetBundle?: () => void
+  isLoading?: boolean
 }
 
 // Counter Animation Component
@@ -112,7 +114,7 @@ const AnimatedCounter = () => {
   )
 }
 
-const Hero: React.FC<HeroProps> = ({ onGetBundle }) => {
+const Hero: React.FC<HeroProps> = ({ onGetBundle, isLoading = false }) => {
   const [modalIdx, setModalIdx] = React.useState<number|null>(null)
   const [imgError, setImgError] = React.useState<{[key:number]:boolean}>({})
 
@@ -138,11 +140,10 @@ const Hero: React.FC<HeroProps> = ({ onGetBundle }) => {
   const items = [...previewScreenshots, ...previewScreenshots]
 
   const handleGetBundleClick = () => {
-    // Track client-side button click for both platforms
-    trackFacebookButtonClickClient('Hero Section', 'Get 15,000 Reels – $14.99 (was $69.99)')
+    // Track client-side for TikTok only (Facebook Lead tracking removed)
     trackTikTokButtonClickClient('Hero Section', 'Get 15,000 Reels – $14.99 (was $69.99)')
     
-    // Trigger checkout (server-side tracking handled in parent component)
+    // Trigger checkout (InitiateCheckout tracking handled in parent component)
     if (onGetBundle) {
       onGetBundle()
     }
@@ -195,6 +196,7 @@ const Hero: React.FC<HeroProps> = ({ onGetBundle }) => {
                   <div key={`row1-${src}-${i}`} className="inline-block relative w-44 h-80 sm:w-48 sm:h-88 md:w-52 md:h-96 lg:w-56 lg:h-[400px] rounded-2xl overflow-hidden shadow-xl border border-white/10 bg-black cursor-pointer" onClick={() => {
                     setModalIdx(i % 14)
                     trackTikTokButtonClickClient('Hero Video Marquee Row 1', `Preview Video ${(i % 14) + 1}`)
+                    trackViewContent(`Preview Video ${(i % 14) + 1} - Hero Marquee Row 1`) // Facebook conversion tracking
                   }}>
                     {!imgError[i] ? (
                       <Image
@@ -232,6 +234,7 @@ const Hero: React.FC<HeroProps> = ({ onGetBundle }) => {
                   <div key={`row2-${src}-${i}`} className="inline-block relative w-44 h-80 sm:w-48 sm:h-88 md:w-52 md:h-96 lg:w-56 lg:h-[400px] rounded-2xl overflow-hidden shadow-xl border border-white/10 bg-black cursor-pointer" onClick={() => {
                     setModalIdx((i % 13) + 14)
                     trackTikTokButtonClickClient('Hero Video Marquee Row 2', `Preview Video ${(i % 13) + 15}`)
+                    trackViewContent(`Preview Video ${(i % 13) + 15} - Hero Marquee Row 2`) // Facebook conversion tracking
                   }}>
                     {!imgError[i + 14] ? (
                       <Image
@@ -287,15 +290,26 @@ const Hero: React.FC<HeroProps> = ({ onGetBundle }) => {
           <div className="animate-fade-in-up [animation-delay:0.7s]">
             <button 
               onClick={handleGetBundleClick}
-              className="cursor-pointer px-10 py-5 bg-gradient-to-r from-yellow-400 to-orange-400 text-black rounded-full font-bold text-xl hover:from-yellow-500 hover:to-orange-500 transition-all duration-300 shadow-2xl hover:shadow-3xl border-4 border-yellow-400/40 hover:border-orange-400/60 hover:scale-105"
+              disabled={isLoading}
+              className={`cursor-pointer px-10 py-5 bg-gradient-to-r from-yellow-400 to-orange-400 text-black rounded-full font-bold text-xl transition-all duration-300 shadow-2xl border-4 border-yellow-400/40 ${
+                isLoading 
+                  ? 'opacity-75 cursor-not-allowed' 
+                  : 'hover:from-yellow-500 hover:to-orange-500 hover:shadow-3xl hover:border-orange-400/60 hover:scale-105'
+              }`}
             >
               <div className="flex items-center justify-center gap-3">
-                <FaFire className="w-5 h-5" />
-                <span>Get Access – $14.99</span>
-                <div className="flex flex-col items-center">
-                  <span className="text-xs text-black/60 leading-none">was</span>
-                  <span className="line-through text-sm text-black/70 leading-none">$69.99</span>
-                </div>
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-black/20 border-t-2 border-t-black rounded-full animate-spin" />
+                ) : (
+                  <FaFire className="w-5 h-5" />
+                )}
+                <span>{isLoading ? 'Processing...' : 'Get Access – $14.99'}</span>
+                {!isLoading && (
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs text-black/60 leading-none">was</span>
+                    <span className="line-through text-sm text-black/70 leading-none">$69.99</span>
+                  </div>
+                )}
               </div>
             </button>
           </div>

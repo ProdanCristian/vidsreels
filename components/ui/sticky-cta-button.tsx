@@ -1,21 +1,21 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { trackFacebookButtonClickClient } from '@/lib/facebook-tracking'
+
 import { trackTikTokButtonClickClient } from '@/lib/tiktok-tracking'
 
 interface StickyCTAButtonProps {
   isVisible: boolean
   onGetBundle: () => void
+  isLoading?: boolean
 }
 
-const StickyCTAButton: React.FC<StickyCTAButtonProps> = ({ isVisible, onGetBundle }) => {
+const StickyCTAButton: React.FC<StickyCTAButtonProps> = ({ isVisible, onGetBundle, isLoading = false }) => {
   const handleGetBundleClick = () => {
-    // Track client-side button click for both platforms
-    trackFacebookButtonClickClient('Sticky Button', 'Get The Bundle Now')
+    // Track client-side for TikTok only (Facebook Lead tracking removed)
     trackTikTokButtonClickClient('Sticky Button', 'Get The Bundle Now')
     
-    // Trigger checkout (server-side tracking handled in parent component)
+    // Trigger checkout (InitiateCheckout tracking handled in parent component)
     onGetBundle()
   }
   const [timeLeft, setTimeLeft] = useState({
@@ -77,10 +77,22 @@ const StickyCTAButton: React.FC<StickyCTAButtonProps> = ({ isVisible, onGetBundl
         {/* Main CTA Button */}
         <button
           onClick={handleGetBundleClick}
-          className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-bold py-3 px-4 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95"
+          disabled={isLoading}
+          className={`w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold py-3 px-4 rounded-lg shadow-lg transform transition-all duration-200 ${
+            isLoading 
+              ? 'opacity-75 cursor-not-allowed' 
+              : 'hover:from-yellow-500 hover:to-orange-600 hover:scale-105 active:scale-95'
+          }`}
         >
           <div className="text-center">
-            <div className="text-sm font-bold">Get The Bundle Now</div>
+            {isLoading ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-4 h-4 border-2 border-black/20 border-t-2 border-t-black rounded-full animate-spin" />
+                <div className="text-sm font-bold">Processing...</div>
+              </div>
+            ) : (
+              <div className="text-sm font-bold">Get The Bundle Now</div>
+            )}
           </div>
         </button>
       </div>

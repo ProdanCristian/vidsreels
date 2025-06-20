@@ -52,7 +52,17 @@ export async function trackFacebookEvent(eventData: FacebookEventData): Promise<
   }
 }
 
-// Removed server-side ViewContent tracking - handled by browser-based tracking for better user interaction data
+// ===== SERVER-SIDE ONLY TRACKING FUNCTIONS =====
+// All Facebook events now use Conversions API (server-side) for better privacy and accuracy
+
+// Track page views server-side
+export function trackViewContent(contentName?: string) {
+  return trackFacebookEvent({
+    eventName: 'ViewContent',
+    contentName: contentName || '15,000 Viral Reels Bundle',
+    contentCategory: 'Digital Products',
+  });
+}
 
 // Track when someone starts checkout
 export function trackInitiateCheckout(value?: number, buttonLocation?: string) {
@@ -64,56 +74,6 @@ export function trackInitiateCheckout(value?: number, buttonLocation?: string) {
     contentCategory: 'Initiate Checkout',
   });
 }
-
-// ===== CLIENT-SIDE TRACKING FUNCTIONS =====
-// These use the Facebook pixel directly in the browser
-
-declare global {
-  interface Window {
-    fbq?: ((action: string, event: string, data?: Record<string, unknown>) => void) & {
-      version?: string;
-    };
-  }
-}
-
-// Client-side Facebook tracking for button interactions
-export function trackFacebookViewContentClient() {
-  if (typeof window !== 'undefined' && window.fbq) {
-    window.fbq('track', 'ViewContent', {
-      content_name: '15,000 Viral Reels Bundle',
-      content_category: 'Digital Products'
-      // No value/currency for ViewContent - only for actual purchases
-    })
-  }
-}
-
-// Removed client-side InitiateCheckout - handled by server-side for accurate conversion tracking
-
-export function trackFacebookButtonClickClient(buttonLocation: string, buttonText?: string) {
-  if (typeof window !== 'undefined' && window.fbq) {
-    // For high-intent buttons (buy/checkout), use Lead with high intent category
-    if (buttonText?.toLowerCase().includes('get') || 
-        buttonText?.toLowerCase().includes('buy') || 
-        buttonText?.toLowerCase().includes('checkout')) {
-      window.fbq('track', 'Lead', {
-        content_name: buttonText || 'Initiate Checkout Button',
-        content_category: 'High Intent Button Click'
-        // No value/currency - button interactions don't have monetary value
-      })
-    } else {
-      // For other buttons (preview, etc), use Lead with regular category
-      window.fbq('track', 'Lead', {
-        content_name: buttonText || 'Button Interaction',
-        content_category: 'User Interest'
-      })
-    }
-  }
-}
-
-// Removed client-side Purchase - handled by server-side for accurate conversion tracking and revenue attribution
-
-// Removed redundant server-side button tracking functions to prevent duplicate server-side events
-// Server-side events: InitiateCheckout, Purchase (ViewContent handled client-side for better user interaction data)
 
 // Track purchase completion
 export function trackPurchase(

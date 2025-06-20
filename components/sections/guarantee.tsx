@@ -2,20 +2,20 @@
 
 import React from 'react'
 import { FaShieldAlt, FaCheckCircle, FaClock, FaHeart, FaFire, FaDownload } from 'react-icons/fa'
-import { trackFacebookButtonClickClient } from '@/lib/facebook-tracking'
+
 import { trackTikTokButtonClickClient } from '@/lib/tiktok-tracking'
 
 interface GuaranteeProps {
   onGetBundle?: () => void
+  isLoading?: boolean
 }
 
-const Guarantee: React.FC<GuaranteeProps> = ({ onGetBundle }) => {
+const Guarantee: React.FC<GuaranteeProps> = ({ onGetBundle, isLoading = false }) => {
   const handleGetBundleClick = () => {
-    // Track client-side button click for both platforms
-    trackFacebookButtonClickClient('Guarantee Section', 'Get Your Risk-Free Bundle – $14.99')
+    // Track client-side for TikTok only (Facebook Lead tracking removed)
     trackTikTokButtonClickClient('Guarantee Section', 'Get Your Risk-Free Bundle – $14.99')
     
-    // Trigger checkout (server-side tracking handled in parent component)
+    // Trigger checkout (InitiateCheckout tracking handled in parent component)
     if (onGetBundle) {
       onGetBundle()
     }
@@ -90,11 +90,25 @@ const Guarantee: React.FC<GuaranteeProps> = ({ onGetBundle }) => {
             {/* CTA Button */}
             <button
               onClick={handleGetBundleClick}
-              className="cursor-pointer px-12 md:px-16 py-6 md:py-8 bg-gradient-to-r from-yellow-400 to-orange-400 text-black rounded-full font-bold text-xl md:text-2xl hover:from-yellow-500 hover:to-orange-500 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105 animate-pulse-cta"
+              disabled={isLoading}
+              className={`cursor-pointer px-12 md:px-16 py-6 md:py-8 bg-gradient-to-r from-yellow-400 to-orange-400 text-black rounded-full font-bold text-xl md:text-2xl transition-all duration-300 shadow-2xl ${
+                isLoading 
+                  ? 'opacity-75 cursor-not-allowed' 
+                  : 'hover:from-yellow-500 hover:to-orange-500 hover:shadow-3xl transform hover:scale-105 animate-pulse-cta'
+              }`}
             >
-              <FaFire className="inline w-6 h-6 mr-3" />
-              Get Your Risk-Free Bundle – <span className="line-through">$69.99</span> $14.99
-              <FaDownload className="inline w-5 h-5 ml-3" />
+              {isLoading ? (
+                <>
+                  <div className="inline-block w-6 h-6 border-2 border-black/20 border-t-2 border-t-black rounded-full animate-spin mr-3" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <FaFire className="inline w-6 h-6 mr-3" />
+                  Get Your Risk-Free Bundle – <span className="line-through">$69.99</span> $14.99
+                  <FaDownload className="inline w-5 h-5 ml-3" />
+                </>
+              )}
             </button>
 
             {/* Security Badge */}
