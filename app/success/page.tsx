@@ -17,6 +17,29 @@ export default function SuccessPage() {
   const [emailSent, setEmailSent] = useState(false)
   const [emailSending, setEmailSending] = useState(false)
   const [emailError, setEmailError] = useState<string | null>(null)
+  const [processedSessions, setProcessedSessions] = useState<Set<string>>(new Set())
+
+  // Helper function to validate Stripe session ID format
+  const isValidStripeSessionId = (sessionId: string): boolean => {
+    // Stripe session IDs start with 'cs_' and are followed by alphanumeric characters
+    return /^cs_[a-zA-Z0-9_]+$/.test(sessionId) && sessionId.length > 10
+  }
+
+  // Helper function to determine if conversions should be tracked
+  const shouldTrackConversions = (): boolean => {
+    // Don't track on localhost
+    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+      return false
+    }
+    
+    // Don't track if explicitly disabled via environment
+    if (process.env.NODE_ENV === 'development') {
+      return false
+    }
+    
+    // Allow tracking in production
+    return true
+  }
 
   useEffect(() => {
     // Get session ID from URL on client side
@@ -25,12 +48,30 @@ export default function SuccessPage() {
       const id = urlParams.get('session_id')
       setSessionId(id)
       
-      // Send email and track conversions if we have a session ID
-      if (id) {
+      // Send email and track conversions if we have a VALID session ID
+      if (id && isValidStripeSessionId(id)) {
+        // Check if we've already processed this session to prevent duplicates
+        if (processedSessions.has(id)) {
+          console.log('⚠️ Session already processed, skipping:', id.slice(-8))
+          return
+        }
+
+        // Mark session as processed
+        setProcessedSessions(prev => new Set(prev).add(id))
+        
         sendDownloadEmail(id)
-        trackFacebookPurchase(id)  // Facebook server-side
-        trackTikTokPurchase(id)  // TikTok server-side
-        trackGoogleAdsPurchase(id)  // Google Ads conversion
+        
+        // Only track conversions in production or if explicitly enabled
+        if (shouldTrackConversions()) {
+          console.log('📊 Tracking conversions for session:', id.slice(-8))
+          trackFacebookPurchase(id)  // Facebook server-side
+          trackTikTokPurchase(id)  // TikTok server-side
+          trackGoogleAdsPurchase(id)  // Google Ads conversion
+        } else {
+          console.log('🧪 Test mode: Conversion tracking disabled for session:', id.slice(-8))
+        }
+      } else if (id) {
+        console.warn('⚠️ Invalid session ID format detected:', id)
       }
     }
     
@@ -154,11 +195,18 @@ export default function SuccessPage() {
       })
 
       if (!stripeResponse.ok) {
-        console.error('Failed to get Stripe session data')
+        console.error('❌ Failed to get Stripe session data for Facebook tracking')
         return
       }
 
       const stripeData = await stripeResponse.json()
+      
+      // Validate that this is actually a completed purchase
+      if (stripeData.payment_status !== 'paid') {
+        console.warn('⚠️ Stripe session not paid, skipping Facebook tracking:', stripeData.payment_status)
+        return
+      }
+
       const customerEmail = stripeData.customer_details?.email
       const customerName = stripeData.customer_details?.name
       const customerPhone = stripeData.customer_details?.phone
